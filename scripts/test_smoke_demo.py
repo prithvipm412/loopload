@@ -6,6 +6,9 @@ import io
 import json
 from pathlib import Path
 import threading
+import os
+import subprocess
+import sys
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
@@ -130,6 +133,22 @@ class ToolTests(unittest.TestCase):
         code, output = self.run_smoke()
         self.assertEqual(code,1)
         self.assertIn('empty percentage outside', output)
+
+
+    def test_reset_restores_inputs_and_invalidates_plan(self):
+        result = subprocess.run([str(ROOT/'scripts/demo_reset.sh'),self.origin],
+                                env={**os.environ,'PYTHON':sys.executable}, capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertEqual(self.server.reset_bodies,[dict(seed=42,n_trucks=20,n_loads=140)])
+        self.assertFalse(self.server.plans)
+        self.assertIn('pre-reset plan invalidated',result.stdout)
+
+    def test_reset_detects_stale_plan_cache(self):
+        self.server.stale_cache = True
+        result = subprocess.run([str(ROOT/'scripts/demo_reset.sh'),self.origin],
+                                env={**os.environ,'PYTHON':sys.executable}, capture_output=True,text=True)
+        self.assertEqual(result.returncode,1)
+        self.assertIn('kept a stale plan',result.stderr)
 
 
 if __name__ == '__main__':
