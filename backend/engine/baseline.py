@@ -3,10 +3,14 @@ import heapq
 import uuid
 from datetime import datetime, timedelta, timezone
 
-from app.config import elapsed_h
+from app.config import cost_per_km, elapsed_h
 from engine.metrics import compute_metrics, leg_costs
 
 IST = timezone(timedelta(hours=5, minutes=30))
+
+# Cities a dispatcher would reposition an idle truck toward, since demand is
+# usually easiest to find at a major freight hub.
+MAJOR_HUBS = ["DEL", "MUM", "BLR", "CHE", "HYD", "KOL", "AMD"]
 
 
 def _now_iso() -> str:
@@ -49,9 +53,18 @@ def plan_baseline(scenario: dict, matrix: dict, config: dict) -> dict:
     load_unload_h = config["load_unload_h"]
     wait_max_h = config["baseline_wait_max_h"]
     search_radius_km = config["baseline_search_radius_km"]
+    cpk = cost_per_km(config)
 
     loads_by_id = {ld["id"]: ld for ld in scenario["loads"]}
     unassigned = set(loads_by_id.keys())
+
+    hubs_in_matrix = [h for h in MAJOR_HUBS if h in city_idx] or list(city_idx)
+
+    def nearest_major_hub(pos):
+        return min(hubs_in_matrix, key=lambda h: dist(pos, h))
+
+    def unassigned_origin_count(city):
+        return sum(1 for lid in unassigned if loads_by_id[lid]["origin"] == city)
 
     trucks_state = {}
     heap = []
@@ -91,14 +104,28 @@ def plan_baseline(scenario: dict, matrix: dict, config: dict) -> dict:
         loaded_arrive = loaded_depart + elapsed_h(dur(load["origin"], load["destination"]), config)
         if loaded_arrive > load["deliver_by_h"]:
             return None
+        d_loaded = dist(load["origin"], load["destination"])
+        delivery_complete = loaded_arrive + load_unload_h
+
+        # Only take trips that are profitable on their own (a real dispatcher
+        # would not drive a loss-making lane), ranked by profit per hour busy
+        # rather than by nearest origin.
+        trip_profit = load["freight_inr"] - cpk * (d_empty + d_loaded)
+        if trip_profit <= 0:
+            return None
+        hours_busy = delivery_complete - t
+        score = trip_profit / hours_busy if hours_busy > 0 else trip_profit
+
         return {
             "d_empty": d_empty,
             "empty_depart": t,
             "empty_arrive": arrive_origin,
             "loaded_depart": loaded_depart,
             "loaded_arrive": loaded_arrive,
-            "delivery_complete": loaded_arrive + load_unload_h,
-            "d_loaded": dist(load["origin"], load["destination"]),
+            "delivery_complete": delivery_complete,
+            "d_loaded": d_loaded,
+            "trip_profit": trip_profit,
+            "score": score,
         }
 
     while heap:
@@ -114,7 +141,7 @@ def plan_baseline(scenario: dict, matrix: dict, config: dict) -> dict:
             plan_info = feasible(state, loads_by_id[lid])
             if plan_info is None:
                 continue
-            if best_plan is None or plan_info["d_empty"] < best_plan["d_empty"]:
+            if best_plan is None or plan_info["score"] > best_plan["score"]:
                 best_load, best_plan = loads_by_id[lid], plan_info
 
         if best_load is not None:
@@ -142,26 +169,29 @@ def plan_baseline(scenario: dict, matrix: dict, config: dict) -> dict:
             heapq.heappush(heap, (state["free_h"], truck_id))
             continue
 
+        # Wait budget spent with nothing profitable found: reposition to
+        # wherever demand looks better (a major hub) rather than reflexively
+        # going home, then keep searching for the rest of the week.
         truck = state["truck"]
         pos = state["pos"]
-        if pos != truck["home_city"]:
-            d_home = dist(pos, truck["home_city"])
+        home = truck["home_city"]
+        hub = nearest_major_hub(pos)
+        target = hub if unassigned_origin_count(hub) > unassigned_origin_count(home) else home
+        if pos != target:
+            d_move = dist(pos, target)
             depart = state["free_h"]
-            arrive = depart + elapsed_h(dur(pos, truck["home_city"]), config)
+            arrive = depart + elapsed_h(dur(pos, target), config)
             state["legs"].append(_make_leg(
-                truck_id, state["seq"], "empty", pos, truck["home_city"], None, depart, arrive, d_home, 0, config))
+                truck_id, state["seq"], "empty", pos, target, None, depart, arrive, d_move, 0, config))
             state["seq"] += 1
-            state["pos"] = truck["home_city"]
+            state["pos"] = target
             state["free_h"] = arrive
 
-        # Keep looking for loads from home rather than staying idle for the
-        # rest of the week. Only stop for good once there is truly no horizon
-        # time left to search (otherwise, once home with nothing to do, this
-        # would requeue at an unchanged free_h forever).
+        # Only stop for good once there is truly no horizon time left to fit
+        # even one more 6h wait step (otherwise this would requeue forever
+        # once parked with nothing to do).
         state["wait_h"] = 0.0
-        if state["free_h"] >= horizon_h:
-            continue
-        if state["free_h"] + 6.0 > horizon_h and state["pos"] == truck["home_city"]:
+        if state["free_h"] + 6.0 > horizon_h:
             continue
         heapq.heappush(heap, (state["free_h"], truck_id))
 
