@@ -32,6 +32,8 @@ for mode in ['baseline','ai']:
   tps.append(dict(truck_id=trucks[i]['id'],legs=legs,totals=metrics(legs)))
  m=metrics([l for t in tps for l in t['legs']]);m['trucks_used']=10;m['idle_h']=sum(t['totals']['idle_h'] for t in tps)
  plans[mode]=dict(plan_id=f'{mode}-demo0042',mode=mode,created_at='2026-11-02T22:40:00+05:30',solve_time_s=8.2 if mode=='ai' else .2,trucks=tps,unassigned_loads=[l['id'] for l in loads if not any(l['id']==x['load_id'] for t in tps for x in t['legs'])],metrics=m)
+for p in plans.values():
+ p['unassigned_loads']=[l['id'] for l in loads if not any(l['id']==x['load_id'] for t in p['trucks'] for x in t['legs'])]
 scenario=dict(week_start='2026-11-09T00:00:00+05:30',cities=cities,owners=owners,trucks=trucks,loads=loads)
 for name,data in [('scenario',scenario),('plan_baseline',plans['baseline']),('plan_ai',plans['ai']),('compare',dict(baseline=plans['baseline']['metrics'],ai=plans['ai']['metrics'],delta={k:round(plans['ai']['metrics'][k]-plans['baseline']['metrics'][k],1) for k in ['empty_km','empty_pct','profit_inr','co2_kg','loads_served']}))]:
  (root/'src/mocks'/f'{name}.json').write_text(json.dumps(data,indent=2))

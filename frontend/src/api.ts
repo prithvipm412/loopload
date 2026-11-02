@@ -3,7 +3,7 @@ import baselineJson from './mocks/plan_baseline.json';
 import aiJson from './mocks/plan_ai.json';
 import compareJson from './mocks/compare.json';
 import type {Scenario,Plan,Mode,Compare,Truck,TruckPlan,Owner,Metrics,Forecast,ComplianceResult,ReplanEvent} from './types';
-const scenario=scenarioJson as Scenario, baseline=baselineJson as Plan, ai=aiJson as Plan;
+const scenario=scenarioJson as Scenario, baseline=baselineJson as unknown as Plan, ai=aiJson as unknown as Plan;
 const plans=new Map<string,Plan>([[baseline.plan_id,baseline],[ai.plan_id,ai]]);
 const base=import.meta.env.VITE_API_URL || 'http://localhost:8000';
 export const mockMode=import.meta.env.VITE_USE_MOCKS==='true';

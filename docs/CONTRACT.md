@@ -170,13 +170,17 @@ Codes: `EWAY_MISSING`, `EWAY_EXPIRES`, `EWAY_VEHICLE_MISMATCH`, `OVER_CAPACITY`,
 | Cotton bales | RJK, AMD → TPR, CBE | open_body | Oct–Mar |
 | Textiles | TPR, SRT → DEL, MUM, KOL, JAI | container | all year |
 | Oranges | NAG → DEL, BLR, HYD, CHE | open_body | Nov–Feb |
-| Marble | JAI → BLR, HYD, MUM, PUN | open_body | all year |
+| Marble | JAI → BLR, HYD, MUM, PUN, NAG | open_body | all year |
 | Machinery / auto parts | PUN, CHE → DEL, BLR, AMD, LDH | container | all year |
 | FMCG | MUM, DEL, KOL → all | container | Sep–Nov (festival) |
 | Steel | RPR, VTZ → HYD, BLR, CHE, NAG | open_body | all year |
 | Wheat | LDH, KNP → BLR, HYD, MUM | open_body | Apr–Jun |
 | Spices | COK → DEL, MUM, AMD | container | all year |
 | Pharma | HYD, AMD → all | reefer | all year |
+
+**Hero chain exception (demo only):** truck **T01** (owner O1, home TPR, `open_body`, 21 t) must have these 4 loads, all with `truck_type: "open_body"`, timed so they chain within the week:
+TPR→DEL Textiles (tarpaulin-covered open body) → DEL→JAI FMCG → JAI→NAG Marble → NAG→TPR Oranges.
+Every other load follows the table above.
 
 ## 6. Python function signatures (who owns what)
 

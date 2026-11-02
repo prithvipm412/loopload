@@ -65,11 +65,11 @@ This file lists every feature in the Ideathon demo, how it is built, and who bui
 
 ## F. Frontend (CX3)
 
-Built with React + Vite + TypeScript, Tailwind, deck.gl over a MapLibre dark CARTO basemap (no token needed), Recharts and framer-motion. Navy theme.
+Built with React + Vite + TypeScript, Tailwind, deck.gl over a light MapLibre CARTO Positron basemap (no token needed), Recharts and framer-motion. Light off-white and beige theme with pastel accents (sage, coral, peach, lavender, sky).
 
 | # | Feature | P | How we build it |
 |---|---|---|---|
-| F1 | **Live India map** | P0 | City dots, with legs drawn as a deck.gl `PathLayer`. **Loaded legs are solid green and empty legs are dashed red** (`PathStyleExtension`). |
+| F1 | **Live India map** | P0 | City dots, with legs drawn as a deck.gl `PathLayer`. **Loaded legs are solid sage green and empty legs are dashed coral** (`PathStyleExtension`). |
 | F2 | **"AI Plan" button** | P0 | Switches from the baseline plan to the AI plan. The legs cross-fade, and the counters animate down. |
 | F3 | **Impact counters** | P0 | Empty km, wasted diesel ₹, CO₂ kg, revenue ₹ and loaded %, comparing baseline and AI. |
 | F4 | **Animated trucks** | P0 | A `TripsLayer` with timestamps from the leg departure and arrival times, plus play/pause and a week scrubber. |
