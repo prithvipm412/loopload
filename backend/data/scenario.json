@@ -291,7 +291,7 @@
       "id": "T04",
       "owner_id": "O1",
       "reg_no": "TN39AB1204",
-      "type": "open_body",
+      "type": "container",
       "capacity_t": 25,
       "home_city": "TPR",
       "start_city": "TPR",
@@ -321,7 +321,7 @@
       "id": "T06",
       "owner_id": "O2",
       "reg_no": "MH15AB1206",
-      "type": "container",
+      "type": "open_body",
       "capacity_t": 21,
       "home_city": "NSK",
       "start_city": "LDH",
@@ -826,7 +826,7 @@
       "eway_bill": {
         "number": "EWB1000000015",
         "valid_until_h": 265.94,
-        "vehicle_reg": "TN39AB1204"
+        "vehicle_reg": "MH15AB1205"
       }
     },
     {
@@ -845,7 +845,7 @@
       "eway_bill": {
         "number": "EWB1000000016",
         "valid_until_h": 282.8,
-        "vehicle_reg": "MH15AB1206"
+        "vehicle_reg": "TN39AB1204"
       }
     },
     {
@@ -959,7 +959,7 @@
       "eway_bill": {
         "number": "EWB1000000022",
         "valid_until_h": 204.53,
-        "vehicle_reg": "TN39AB1204"
+        "vehicle_reg": "MH15AB1205"
       }
     },
     {
@@ -997,7 +997,7 @@
       "eway_bill": {
         "number": "EWB1000000024",
         "valid_until_h": 264.13,
-        "vehicle_reg": "MH15AB1206"
+        "vehicle_reg": "TN39AB1204"
       }
     },
     {
@@ -1035,7 +1035,7 @@
       "eway_bill": {
         "number": "EWB1000000026",
         "valid_until_h": 229.63,
-        "vehicle_reg": "MH15AB1206"
+        "vehicle_reg": "TN39AB1204"
       }
     },
     {
@@ -1054,7 +1054,7 @@
       "eway_bill": {
         "number": "EWB1000000027",
         "valid_until_h": 246.66,
-        "vehicle_reg": "MH15AB1205"
+        "vehicle_reg": "MH15AB1206"
       }
     },
     {
@@ -1088,7 +1088,7 @@
       "eway_bill": {
         "number": "EWB1000000029",
         "valid_until_h": 131.63,
-        "vehicle_reg": "MH15AB1205"
+        "vehicle_reg": "MH15AB1206"
       }
     },
     {
@@ -1297,7 +1297,7 @@
       "eway_bill": {
         "number": "EWB1000000040",
         "valid_until_h": 282.44,
-        "vehicle_reg": "MH15AB1206"
+        "vehicle_reg": "TN39AB1204"
       }
     },
     {
@@ -1335,7 +1335,7 @@
       "eway_bill": {
         "number": "EWB1000000042",
         "valid_until_h": 302.76,
-        "vehicle_reg": "MH15AB1206"
+        "vehicle_reg": "TN39AB1204"
       }
     },
     {
@@ -1696,7 +1696,7 @@
       "eway_bill": {
         "number": "EWB1000000061",
         "valid_until_h": 49.39,
-        "vehicle_reg": "MH15AB1206"
+        "vehicle_reg": "TN39AB1204"
       }
     },
     {
@@ -1753,7 +1753,7 @@
       "eway_bill": {
         "number": "EWB1000000064",
         "valid_until_h": 250.04,
-        "vehicle_reg": "MH15AB1205"
+        "vehicle_reg": "MH15AB1206"
       }
     },
     {
@@ -1829,7 +1829,7 @@
       "eway_bill": {
         "number": "EWB1000000068",
         "valid_until_h": 220.82,
-        "vehicle_reg": "TN39AB1204"
+        "vehicle_reg": "MH15AB1205"
       }
     },
     {
@@ -1924,7 +1924,7 @@
       "eway_bill": {
         "number": "EWB1000000073",
         "valid_until_h": 103.68,
-        "vehicle_reg": "MH15AB1205"
+        "vehicle_reg": "MH15AB1206"
       }
     },
     {
@@ -2038,7 +2038,7 @@
       "eway_bill": {
         "number": "EWB1000000079",
         "valid_until_h": 148.71,
-        "vehicle_reg": "MH15AB1206"
+        "vehicle_reg": "TN39AB1204"
       }
     },
     {
@@ -2133,7 +2133,7 @@
       "eway_bill": {
         "number": "EWB1000000084",
         "valid_until_h": 296.19,
-        "vehicle_reg": "MH15AB1206"
+        "vehicle_reg": "TN39AB1204"
       }
     },
     {
@@ -2505,7 +2505,7 @@
       "eway_bill": {
         "number": "EWB1000000104",
         "valid_until_h": 311.41,
-        "vehicle_reg": "TN39AB1204"
+        "vehicle_reg": "MH15AB1205"
       }
     },
     {
@@ -2790,7 +2790,7 @@
       "eway_bill": {
         "number": "EWB1000000119",
         "valid_until_h": 244.68,
-        "vehicle_reg": "TN39AB1204"
+        "vehicle_reg": "MH15AB1205"
       }
     },
     {
@@ -2923,7 +2923,7 @@
       "eway_bill": {
         "number": "EWB1000000126",
         "valid_until_h": 167.79,
-        "vehicle_reg": "MH15AB1205"
+        "vehicle_reg": "MH15AB1206"
       }
     },
     {
@@ -3132,7 +3132,7 @@
       "eway_bill": {
         "number": "EWB1000000137",
         "valid_until_h": 71.04,
-        "vehicle_reg": "MH15AB1206"
+        "vehicle_reg": "TN39AB1204"
       }
     },
     {

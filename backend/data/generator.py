@@ -64,6 +64,15 @@ def generate_scenario(seed: int = 42, n_trucks: int = 20, n_owners: int = 6, n_l
             if ti == 0: truck.update(capacity_t=21,start_city='TPR',available_from_h=0)
             trucks.append(truck); owner['trucks'].append(tid)
         owners.append(owner)
+    # The hero loop (below) needs T01 to be the uniquely best-positioned open_body
+    # truck for it: any other truck of the same type starting in the same city
+    # is an equally cheap fit and the optimizer could assign the loop to either.
+    # Swap such rivals to a different type, preserving the fleet-wide type mix.
+    hero_type, hero_start = trucks[0]['type'], trucks[0]['start_city']
+    rivals = [i for i,t in enumerate(trucks) if i and t['type']==hero_type and t['start_city']==hero_start]
+    swap_pool = [i for i,t in enumerate(trucks) if i and t['type']!=hero_type and t['start_city']!=hero_start]
+    for rival,other in zip(rivals,swap_pool):
+        trucks[rival]['type'],trucks[other]['type'] = trucks[other]['type'],trucks[rival]['type']
     loads = []
     def make_load(lane, start, end, assigned=None):
         a,b,c,t = (lane[k] for k in ('origin','destination','commodity','truck_type'))
