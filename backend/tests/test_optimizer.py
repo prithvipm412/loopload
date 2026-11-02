@@ -18,7 +18,18 @@ def fixture_data():
     return tuple(json.loads((FIXTURES / name).read_text()) for name in ('cx1_scenario.json', 'cx1_matrix.json'))
 
 
+def assert_explanations(plan):
+    for route in plan['trucks']:
+        for leg in route['legs']:
+            assert isinstance(leg['reason'], str)
+            assert leg['reason'].strip()
+            assert len(leg['reason']) <= 90
+    assert len(plan['highlights']) == 3
+    assert all(isinstance(h, str) and h.strip() and len(h) <= 100 for h in plan['highlights'])
+
+
 def assert_feasible(plan, scenario, matrix, config=CONFIG):
+    assert_explanations(plan)
     loads = {l['id']: l for l in scenario['loads']}
     trucks = {t['id']: t for t in scenario['trucks']}
     cities = {c: i for i,c in enumerate(matrix['cities'])}
@@ -105,6 +116,7 @@ def test_empty_fleet_and_loads():
     scenario,matrix = fixture_data()
     scenario['loads'] = []
     plan = optimizer.plan_optimized(scenario,matrix,CONFIG,time_limit_s=.1)
+    assert_explanations(plan)
     assert plan['metrics']['profit_inr'] == 0
     assert len(plan['trucks']) == 5
     scenario['trucks'] = []
@@ -190,6 +202,8 @@ def replan_data():
             dict(truck_id='T01',seq=2,kind='loaded',**{'from':'JAI','to':'TPR'},load_id='B',
                  depart_h=7,arrive_h=9,distance_km=90,revenue_inr=10000,diesel_inr=2025,
                  toll_inr=450,co2_kg=60.3,path=[])]
+    for leg in legs:
+        leg['reason'] = f"Original explanation for leg {leg['seq']}"
     plan = dict(plan_id='ai-old',mode='ai',trucks=[dict(truck_id='T01',legs=legs)],unassigned_loads=[])
     return scenario,matrix,config,plan
 
@@ -294,3 +308,56 @@ def test_seed_42_replan(generated):
     assert result['solve_time_s'] <= 5
     assert result['replan_of'] == old['plan_id']
     print(f"Replan seed 42: {result['solve_time_s']:.2f}s, {len(result['changed_trucks'])} trucks changed")
+
+
+def test_explanations_use_route_facts_without_changing_legs():
+    scenario,matrix,config,old = replan_data()
+    # A direct handoff: finish unloading at 4h, wait 2h, load until 7h.
+    scenario['loads'][1]['origin'] = 'DEL'
+    scenario['loads'][1]['commodity'] = 'Marble'
+    legs = deepcopy(old['trucks'][0]['legs'][::2])
+    legs[1].update(seq=1, **{'from':'DEL'}, distance_km=45, arrive_h=8)
+    for leg in legs:
+        leg.pop('reason')
+    before = deepcopy(legs)
+    result = optimizer._finish([dict(truck_id='T01',legs=legs)],scenario,config,time.monotonic())
+    assert_explanations(result)
+    assert legs[1]['reason'] == 'Picks up marble in Delhi 2.0 h after unloading; 0 empty km'
+    assert '45 km' in legs[0]['reason'] and '₹10,000' in legs[0]['reason']
+    assert result['highlights'][0] == 'T01 completes a 2-state loop with 0 empty km'
+    assert result['highlights'][1] == 'Direct pickups after delivery: 1, with 0 empty km between jobs'
+    assert [{k:v for k,v in l.items() if k!='reason'} for l in legs] == before
+
+
+def test_empty_reason_names_next_load_and_only_reports_supplied_forecasts():
+    scenario,matrix,config,old = replan_data()
+    routes = deepcopy(old['trucks'])
+    for leg in routes[0]['legs']:
+        leg.pop('reason')
+    result = optimizer._finish(routes,scenario,config,time.monotonic())
+    assert '45 km empty to Jaipur' in routes[0]['legs'][1]['reason']
+    assert '₹10,000 demo cargo load' in routes[0]['legs'][1]['reason']
+    terminal = deepcopy(old['trucks'][0]['legs'][1])
+    terminal.pop('reason')
+    routes = [dict(truck_id='T01',legs=[terminal])]
+    optimizer._finish(routes,scenario,config,time.monotonic())
+    assert 'forecast' not in terminal['reason']
+    terminal.pop('reason')
+    forecast = dict(scenario['loads'][1],pickup_start_h=25,probability=1,commodity='Oranges')
+    cfg = dict(config,forecast_loads=[dict(forecast,id=f'F{i}') for i in range(3)])
+    result = optimizer._finish(routes,scenario,cfg,time.monotonic())
+    assert terminal['reason'] == 'Ends in Jaipur; 3 orange loads forecast next week'
+    assert_explanations(result)
+
+
+def test_replan_adds_missing_legacy_reasons_without_changing_history():
+    from engine.replan import replan
+    scenario,matrix,config,old = replan_data()
+    for leg in old['trucks'][0]['legs']:
+        leg.pop('reason')
+    before = deepcopy(old)
+    result = replan(old,dict(type='cancel_load',load_id='B',at_h=100),scenario,matrix,config)
+    assert_explanations(result)
+    assert [{k:v for k,v in l.items() if k!='reason'} for l in result['trucks'][0]['legs']] == old['trucks'][0]['legs']
+    assert old == before
+    assert result['changed_trucks'] == []

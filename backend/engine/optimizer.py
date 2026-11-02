@@ -46,7 +46,86 @@ def _metrics(legs, loads_total, trucks, config):
                 idle_h=round(idle, 1))
 
 
+def _explain(routes, scenario, config):
+    """Describe observable route facts; never infer demand or solver intent."""
+    cities = {c['id']: c for c in scenario['cities']}
+    loads = {l['id']: l for l in scenario['loads']}
+    trucks = {t['id']: t for t in scenario['trucks']}
+    def cargo_label(commodity):
+        label = commodity.lower()[:20]
+        return {'oranges': 'orange', 'onions': 'onion'}.get(label, label)
+    for route in routes:
+        legs = route['legs']
+        for i, leg in enumerate(legs):
+            # Replans keep explanations on frozen legs, including API-enriched ones.
+            if leg.get('reason'):
+                continue
+            city = cities.get(leg['from'], {}).get('name', leg['from'])[:20]
+            destination = cities.get(leg['to'], {}).get('name', leg['to'])[:20]
+            load = loads.get(leg['load_id'], {})
+            commodity = load.get('commodity', 'cargo').lower()[:20]
+            previous = legs[i-1] if i else None
+            if leg['kind'] == 'loaded':
+                if previous and previous['kind'] == 'loaded' and previous['to'] == leg['from']:
+                    gap = max(0, leg['depart_h']-previous['arrive_h']-2*config['load_unload_h'])
+                    reason = (f'Picks up {commodity} in {city} {gap:.1f} h after unloading; '
+                              '0 empty km')
+                else:
+                    reason = (f'Carries {commodity} from {city}: '
+                              f"{leg['distance_km']:g} km, ₹{leg['revenue_inr']:,}")
+            else:
+                following = legs[i+1] if i+1 < len(legs) else None
+                forecasts = [l for l in config.get('forecast_loads', [])
+                             if l['origin'] == leg['to']
+                             and config['horizon_h'] <= l['pickup_start_h'] < config['horizon_h']+168
+                             and l['truck_type'] == trucks[route['truck_id']]['type']
+                             and l['weight_t'] <= trucks[route['truck_id']]['capacity_t']
+                             and l.get('probability', 1) > 0] if following is None else []
+                if forecasts:
+                    demand = {}
+                    for forecast in forecasts:
+                        cargo = cargo_label(forecast['commodity'])
+                        demand[cargo] = demand.get(cargo, 0) + forecast.get('probability', 1)
+                    cargo, count = max(demand.items(), key=lambda item: (item[1], item[0]))
+                    reason = f'Ends in {destination}; {count:g} {cargo} loads forecast next week'
+                elif following and following['kind'] == 'loaded' and following['from'] == leg['to']:
+                    cargo = cargo_label(loads.get(following['load_id'], {}).get('commodity', 'cargo'))
+                    reason = (f"Drives {leg['distance_km']:g} km empty to {destination} for a "
+                              f"₹{following['revenue_inr']:,} {cargo} load")
+                else:
+                    reason = f"Repositions {leg['distance_km']:g} km empty to {destination}"
+            if len(reason) > 90:
+                # Compact fallback retains numbers without cutting a sentence mid-word.
+                reason = (f"{leg['distance_km']:g} km to {leg['to']}: "
+                          + (f"₹{leg['revenue_inr']:,} freight" if leg['kind']=='loaded'
+                             else 'empty repositioning'))
+            leg['reason'] = reason
+
+
+def _highlights(routes, scenario, metrics):
+    cities = {c['id']: c for c in scenario['cities']}
+    used = [r for r in routes if r['legs']]
+    loops = [r for r in used if r['totals']['loads_served'] >= 2
+             and r['legs'][0]['from'] == r['legs'][-1]['to']]
+    if used:
+        best = max(loops or used, key=lambda r: (r['totals']['loads_served'],
+                                                r['totals']['profit_inr']))
+        states = {cities[c]['state'] for l in best['legs'] for c in (l['from'],l['to']) if c in cities}
+        description = (f"a {len(states)}-state loop" if loops else
+                       f"{best['totals']['loads_served']} loads")
+        first = (f"{best['truck_id']} completes {description} with "
+                 f"{best['totals']['empty_km']:g} empty km")
+    else:
+        first = f"0 trucks dispatched; {metrics['loads_total']} loads remain unserved"
+    handoffs = sum(a['kind']==b['kind']=='loaded' and a['to']==b['from']
+                   for r in routes for a,b in zip(r['legs'],r['legs'][1:]))
+    return [first,
+            f'Direct pickups after delivery: {handoffs}, with 0 empty km between jobs',
+            f"Fleet profit ₹{metrics['profit_inr']:,} from {metrics['loads_served']} loads"]
+
+
 def _finish(routes, scenario, config, started, mode='ai', solver=None):
+    _explain(routes, scenario, config)
     trucks = {t['id']: t for t in scenario['trucks']}
     legs = [l for r in routes for l in r['legs']]
     served = {l['load_id'] for l in legs if l['load_id']}
@@ -58,6 +137,8 @@ def _finish(routes, scenario, config, started, mode='ai', solver=None):
                 metrics=_metrics(legs, len(scenario['loads']), scenario['trucks'], config))
     if solver:
         plan['solver'] = solver
+    plan['highlights'] = _highlights(routes, scenario, plan['metrics'])
+    plan['solve_time_s'] = round(time.monotonic()-started, 3)
     return plan
 
 
