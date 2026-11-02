@@ -7,5 +7,8 @@ export const compact = (n: number) =>
     : Math.abs(n) >= 1e5
       ? `₹${num(n / 1e5, 2)} L`
       : money(n);
-export const dayTime = (h: number) =>
-  `${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][Math.min(6, Math.floor(h / 24))]} ${String(Math.floor(h % 24)).padStart(2, "0")}:${String(Math.round((h % 1) * 60) % 60).padStart(2, "0")}`;
+export const dayTime = (h: number) => {
+  const minutes = Math.round(h * 60);
+  const day = Math.floor(minutes / 1440);
+  return `${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][day % 7]} ${String(Math.floor(minutes / 60) % 24).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}${day >= 7 ? ` (+${Math.floor(day / 7)}w)` : ""}`;
+};

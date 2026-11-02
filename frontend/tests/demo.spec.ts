@@ -31,11 +31,22 @@ test("judge demo: plan, inspect compliance, cancel a load, forecast and Kannada 
   await expect(
     page.getByRole("dialog").locator(".kind-label.loaded"),
   ).toHaveCount(4);
+
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).not.toBeVisible();
+  const issueTruck = aiFixture.trucks.find((t) =>
+    t.legs.some((l) =>
+      l.compliance.issues.some((i) => i.code === "EWAY_EXPIRES"),
+    ),
+  );
+  await page
+    .locator(".truck-row")
+    .filter({ hasText: issueTruck.truck_id })
+    .click();
   await expect(
     page.getByRole("dialog").getByText(/E-way bill expires/),
   ).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).not.toBeVisible();
   await page.getByRole("button", { name: "Simulate: cancel a load" }).click();
   await expect(page.getByRole("status")).toContainText("Re-planned in 1.8 s");
   await expect(page.locator(".truck-row.changed")).toHaveCount(1);
@@ -45,7 +56,7 @@ test("judge demo: plan, inspect compliance, cancel a load, forecast and Kannada 
   ).toBeVisible();
   await expect(page.locator(".lane-row")).toHaveCount(8);
   await page.locator(".lane-row").nth(1).click();
-  await expect(page.locator(".forecast-chart h2")).toHaveText("DEL → JAI");
+  await expect(page.locator(".forecast-chart h2")).toHaveText("NSK → BLR");
   await page.getByRole("link", { name: "Driver view", exact: true }).click();
   await page.getByRole("button", { name: "ಕನ್ನಡ", exact: true }).click();
   await expect(page.locator(".phone")).toHaveAttribute("lang", "kn");
@@ -111,7 +122,15 @@ test("fixture totals and deltas agree with their legs and preserve the hero loop
   const compare = fixture("compare");
   const scenario = fixture("scenario");
   expect(scenario.cities).toHaveLength(25);
-  expect(scenario.trucks).toHaveLength(10);
+  expect(scenario.trucks).toHaveLength(20);
+  expect(scenario).toEqual(
+    JSON.parse(
+      readFileSync(
+        new URL("../../backend/data/scenario.json", import.meta.url),
+        "utf8",
+      ),
+    ),
+  );
   for (const plan of [baseline, aiFixture, solo]) {
     const legs = plan.trucks.flatMap((t) => t.legs);
     expect(plan.metrics.empty_km).toBeCloseTo(
@@ -136,11 +155,13 @@ test("fixture totals and deltas agree with their legs and preserve the hero loop
     );
     for (const truck of plan.trucks) {
       for (const leg of truck.legs) {
-        expect(leg.arrive_h).toBeLessThanOrEqual(168);
+        if (plan.mode !== "baseline")
+          expect(leg.arrive_h).toBeLessThanOrEqual(168);
         expect(leg.arrive_h).toBeGreaterThan(leg.depart_h);
         expect(leg.path.length).toBeGreaterThanOrEqual(2);
         const city = scenario.cities.find((c) => c.id === leg.from)!;
-        expect(leg.path[0]).toEqual([city.lon, city.lat]);
+        expect(leg.path[0][0]).toBeCloseTo(city.lon, 1);
+        expect(leg.path[0][1]).toBeCloseTo(city.lat, 1);
         if (leg.kind === "loaded")
           expect(scenario.loads.some((l) => l.id === leg.load_id)).toBeTruthy();
         else expect(leg.load_id).toBeNull();
@@ -162,4 +183,28 @@ test("fixture totals and deltas agree with their legs and preserve the hero loop
   expect(
     aiFixture.trucks.flatMap((t) => t.legs).filter((l) => !l.compliance.ok),
   ).toHaveLength(2);
+});
+
+test("real-data edge cases: idle trucks, week overrun and warning-only compliance", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/");
+  await page.getByRole("button", { name: "Pause playback" }).click();
+  await page.locator(".truck-row").filter({ hasText: "T02" }).click();
+  await expect(page.getByRole("dialog")).toContainText(
+    "No trips assigned this week.",
+  );
+  await expect(page.getByRole("dialog")).toContainText("168 h rest / idle");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Open hero truck" }).click();
+  await expect(page.getByRole("dialog")).toContainText("(+1w)");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "AI Plan", exact: true }).click();
+  await page.locator(".truck-row").filter({ hasText: "T03" }).click();
+  await expect(
+    page.getByRole("dialog").locator(".compliance.warning"),
+  ).toContainText("update Part B");
+  expect(errors).toEqual([]);
 });

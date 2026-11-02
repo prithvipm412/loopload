@@ -588,10 +588,16 @@ function Dashboard({
                       </small>
                     </strong>
                     <span className="mini-bar">
-                      <i style={{ width: `${100 - tp.totals.empty_pct}%` }} />
+                      <i
+                        style={{
+                          width: `${tp.totals.total_km ? 100 - tp.totals.empty_pct : 0}%`,
+                        }}
+                      />
                     </span>
                   </span>
-                  <span>{num(100 - tp.totals.empty_pct)}%</span>
+                  <span>
+                    {num(tp.totals.total_km ? 100 - tp.totals.empty_pct : 0)}%
+                  </span>
                   <ChevronRight size={14} />
                 </button>
               );
@@ -638,13 +644,13 @@ function Comparison({ compare }: Pick<Data, "compare">) {
   ];
   const normalized = chart.map((x) => ({
     ...x,
-    baselineIndex: 100,
-    aiIndex: x.baseline ? (x.ai / x.baseline) * 100 : 0,
+    baselineIndex: x.baseline < 0 ? -100 : 100,
+    aiIndex: x.baseline ? (x.ai / Math.abs(x.baseline)) * 100 : 0,
   }));
   return (
     <div className="comparison">
       <h3>A smarter week, compared</h3>
-      <p>Baseline = 100 · hover for actual values</p>
+      <p>Baseline magnitude = 100 · hover for actual values</p>
       <ResponsiveContainer width="100%" height={145}>
         <BarChart
           data={normalized}
@@ -806,7 +812,7 @@ function TruckDrawer({
                 key={l.seq}
                 style={{
                   left: `${(l.depart_h / 168) * 100}%`,
-                  width: `${((l.arrive_h - l.depart_h) / 168) * 100}%`,
+                  width: `${(Math.max(0, Math.min(168, l.arrive_h) - l.depart_h) / 168) * 100}%`,
                 }}
               >
                 {l.to}
@@ -829,6 +835,9 @@ function TruckDrawer({
           </div>
         </section>
         <div className="leg-list">
+          {!tp.legs.length && (
+            <p className="rest-gap">No trips assigned this week.</p>
+          )}
           {tp.legs.map((leg, i) => (
             <React.Fragment key={leg.seq}>
               {leg.depart_h > (i ? tp.legs[i - 1].arrive_h : 0) && (
@@ -841,11 +850,11 @@ function TruckDrawer({
               <LegCard leg={leg} scenario={scenario} />
             </React.Fragment>
           ))}
-          {tp.legs.at(-1)!.arrive_h < 168 && (
+          {(tp.legs.at(-1)?.arrive_h ?? 0) < 168 && (
             <div className="rest-gap">
               <Clock size={12} />
-              {num(168 - tp.legs.at(-1)!.arrive_h, 1)} h rest / idle through
-              Sunday
+              {num(168 - (tp.legs.at(-1)?.arrive_h ?? 0), 1)} h rest / idle
+              through Sunday
             </div>
           )}
         </div>
@@ -908,8 +917,10 @@ function LegCard({ leg, scenario }: { leg: Leg; scenario: Scenario }) {
         </span>
       </div>
       {leg.compliance ? (
-        <div className={`compliance ${leg.compliance.ok ? "ok" : "warning"}`}>
-          {leg.compliance.ok ? (
+        <div
+          className={`compliance ${leg.compliance.ok && !leg.compliance.issues.length ? "ok" : "warning"}`}
+        >
+          {leg.compliance.ok && !leg.compliance.issues.length ? (
             <>
               <Check size={13} /> Compliance checked
             </>
@@ -1272,9 +1283,13 @@ function DriverPage({ scenario, ai }: Data) {
                   <strong>{localTime(next.arrive_h)}</strong>
                 </span>
               </div>
-              <div className="compliance ok">
+              <div
+                className={`compliance ${next.compliance?.ok && !next.compliance.issues.length ? "ok" : "warning"}`}
+              >
                 <ShieldCheck size={13} />
-                {text.compliance}
+                {next.compliance?.ok && !next.compliance.issues.length
+                  ? text.compliance
+                  : text.warning}
               </div>
             </section>
           )}
@@ -1309,7 +1324,7 @@ function DriverPage({ scenario, ai }: Data) {
                     {localTime(l.depart_h)} ·{" "}
                     {l.kind === "loaded" ? cargo(l) : text.empty}
                   </small>
-                  {l.compliance && !l.compliance.ok && (
+                  {l.compliance && l.compliance.issues.length > 0 && (
                     <small className="driver-warning">
                       <AlertTriangle size={11} />
                       {text.warning}

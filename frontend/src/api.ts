@@ -169,7 +169,11 @@ function recompute(p: Plan) {
   };
   p.trucks.forEach((t) => {
     t.totals = calc(t.legs);
-    t.totals.idle_h = 168 - (t.legs.at(-1)?.arrive_h || 0);
+    t.totals.idle_h = t.legs.reduce(
+      (sum, leg, i) =>
+        sum + (i ? Math.max(0, leg.depart_h - t.legs[i - 1].arrive_h) : 0),
+      0,
+    );
   });
   p.metrics = calc(p.trucks.flatMap((t) => t.legs));
   p.metrics.idle_h = p.trucks.reduce((s, t) => s + t.totals.idle_h, 0);
