@@ -203,3 +203,21 @@ def test_replan_503_until_merged(client):
     created = client.post("/api/plan", json={"mode": "baseline"}).json()
     r = client.post("/api/replan", json={"plan_id": created["plan_id"], "event": {"type": "cancel_load", "load_id": "L001", "at_h": 10}})
     assert r.status_code == 503
+
+
+def test_replan_exposes_replan_of_and_changed_trucks(client):
+    try:
+        import engine.optimizer  # noqa: F401
+        import engine.replan  # noqa: F401
+    except ImportError:
+        pytest.skip("optimizer/replan not merged yet")
+    created = client.post("/api/plan", json={"mode": "ai"}).json()
+    load_id = STATE["scenario"]["loads"][0]["id"]
+    r = client.post(
+        "/api/replan",
+        json={"plan_id": created["plan_id"], "event": {"type": "cancel_load", "load_id": load_id, "at_h": 10}},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["replan_of"] == created["plan_id"]
+    assert isinstance(body["changed_trucks"], list)

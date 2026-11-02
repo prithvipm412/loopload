@@ -1,6 +1,6 @@
 """Pydantic response models mirroring docs/CONTRACT.md §4. Owned by CC.
 Only this API layer uses Pydantic; engine modules stay on plain dict/list (CONTRACT §1)."""
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -104,6 +104,7 @@ class Leg(BaseModel):
     co2_kg: float
     path: list[list[float]] = []
     compliance: Optional[ComplianceResult] = None
+    reason: Optional[Any] = None
 
 
 class Metrics(BaseModel):
@@ -136,6 +137,9 @@ class Plan(BaseModel):
     trucks: list[TruckPlan]
     unassigned_loads: list[str]
     metrics: Metrics
+    replan_of: Optional[str] = None
+    changed_trucks: Optional[list[str]] = None
+    highlights: Optional[Any] = None
 
 
 class Compare(BaseModel):
