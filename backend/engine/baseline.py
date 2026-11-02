@@ -153,7 +153,17 @@ def plan_baseline(scenario: dict, matrix: dict, config: dict) -> dict:
             state["seq"] += 1
             state["pos"] = truck["home_city"]
             state["free_h"] = arrive
-        # truck gives up for the rest of the week; not pushed back onto the heap.
+
+        # Keep looking for loads from home rather than staying idle for the
+        # rest of the week. Only stop for good once there is truly no horizon
+        # time left to search (otherwise, once home with nothing to do, this
+        # would requeue at an unchanged free_h forever).
+        state["wait_h"] = 0.0
+        if state["free_h"] >= horizon_h:
+            continue
+        if state["free_h"] + 6.0 > horizon_h and state["pos"] == truck["home_city"]:
+            continue
+        heapq.heappush(heap, (state["free_h"], truck_id))
 
     trucks_out = [
         {"truck_id": truck["id"], "legs": trucks_state[truck["id"]]["legs"], "totals": {}}

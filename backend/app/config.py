@@ -13,7 +13,7 @@ CONFIG = {
     "max_drive_h_per_day": 10,     # driver rest rule used by planners
     "load_unload_h": 3,            # service time at pickup and at delivery
     "baseline_wait_max_h": 48,     # baseline: how long a truck waits for a return load
-    "baseline_search_radius_km": 150,
+    "baseline_search_radius_km": 450,
     "eway_threshold_inr": 50000,
     "eway_km_per_day": 200,
     "solver_time_limit_s": 10,
