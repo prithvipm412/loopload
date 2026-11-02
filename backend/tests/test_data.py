@@ -110,3 +110,35 @@ def test_path_simplification_and_prefetch(tmp_path,monkeypatch):
     assert len(path)==60 and path[0]==[0,0] and path[-1]==[99,99]
     assert sleeps==[.2]
 
+
+def test_forecast_shapes_and_hot_lanes():
+    from forecast.forecaster import forecast_lanes,hot_lanes
+    forecasts=forecast_lanes()
+    assert forecasts and hot_lanes()
+    assert len({f['lane'] for f in forecasts})==len(forecasts)
+    for f in forecasts:
+        assert set(f)=={'lane','origin','destination','commodity','history','forecast','change_pct'}
+        assert len(f['history'])==104 and len(f['forecast'])==4
+        assert f['history'][0]['week']=='2024-11-11'
+        assert f['history'][-1]['week']=='2026-11-02'
+        assert f['forecast'][0]['week']=='2026-11-09'
+        assert all(0<=p['lower']<=p['loads']<=p['upper'] for p in f['forecast'])
+    hot=hot_lanes()
+    assert any(f['origin']=='NSK' for f in hot)
+    assert any(f['origin']=='NAG' for f in hot)
+    assert hot==sorted(forecasts,key=lambda f:(-f['forecast'][0]['loads'],-f['change_pct'],f['lane']))[:8]
+
+
+def test_history_determinism_and_seasonal_naive(tmp_path,monkeypatch):
+    from forecast import forecaster
+    import statsmodels.tsa.holtwinters
+    monkeypatch.setattr(forecaster,'DATA',tmp_path)
+    first=forecaster.build_history(42)
+    assert first==forecaster.build_history(42)
+    assert first!=forecaster.build_history(43)
+    def fail(*args,**kwargs): raise ValueError('Fit failed')
+    monkeypatch.setattr(statsmodels.tsa.holtwinters,'ExponentialSmoothing',fail)
+    forecast=forecaster.forecast_lanes(2)
+    assert len(forecast[0]['forecast'])==2
+    assert forecast[0]['forecast'][0]['loads']==forecast[0]['history'][-52]['loads']
+    assert forecaster.forecast_lanes(2)==forecast
