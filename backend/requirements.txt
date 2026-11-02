@@ -8,3 +8,4 @@ statsmodels>=0.14
 requests>=2.31
 pytest>=8.0
 httpx>=0.27
+matplotlib>=3.8
