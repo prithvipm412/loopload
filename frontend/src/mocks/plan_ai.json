@@ -1,0 +1,1563 @@
+{
+  "plan_id": "ai-demo0042",
+  "mode": "ai",
+  "created_at": "2026-11-02T22:40:00+05:30",
+  "solve_time_s": 8.2,
+  "trucks": [
+    {
+      "truck_id": "T01",
+      "legs": [
+        {
+          "truck_id": "T01",
+          "seq": 0,
+          "kind": "loaded",
+          "to": "DEL",
+          "load_id": "L001",
+          "depart_h": 3.0,
+          "arrive_h": 62.2,
+          "distance_km": 2292.2,
+          "revenue_inr": 121487,
+          "diesel_inr": 51574,
+          "toll_inr": 11461,
+          "co2_kg": 1535.8,
+          "path": [
+            [
+              77.34,
+              11.11
+            ],
+            [
+              77.45500000000001,
+              19.86
+            ],
+            [
+              77.21,
+              28.61
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "TPR"
+        },
+        {
+          "truck_id": "T01",
+          "seq": 1,
+          "kind": "loaded",
+          "to": "JAI",
+          "load_id": "L002",
+          "depart_h": 65.2,
+          "arrive_h": 69.8,
+          "distance_km": 278.7,
+          "revenue_inr": 14771,
+          "diesel_inr": 6271,
+          "toll_inr": 1394,
+          "co2_kg": 186.7,
+          "path": [
+            [
+              77.21,
+              28.61
+            ],
+            [
+              76.68,
+              27.759999999999998
+            ],
+            [
+              75.79,
+              26.91
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "DEL"
+        },
+        {
+          "truck_id": "T01",
+          "seq": 2,
+          "kind": "loaded",
+          "to": "NAG",
+          "load_id": "L003",
+          "depart_h": 72.8,
+          "arrive_h": 94.0,
+          "distance_km": 849.0,
+          "revenue_inr": 44997,
+          "diesel_inr": 19102,
+          "toll_inr": 4245,
+          "co2_kg": 568.8,
+          "path": [
+            [
+              75.79,
+              26.91
+            ],
+            [
+              77.62,
+              24.03
+            ],
+            [
+              79.09,
+              21.15
+            ]
+          ],
+          "compliance": {
+            "ok": false,
+            "issues": [
+              {
+                "code": "EWAY_EXPIRES",
+                "severity": "error",
+                "message": "E-way bill expires at 89h but delivery is planned at 94h"
+              }
+            ]
+          },
+          "from": "JAI"
+        },
+        {
+          "truck_id": "T01",
+          "seq": 3,
+          "kind": "empty",
+          "to": "TPR",
+          "load_id": null,
+          "depart_h": 97.0,
+          "arrive_h": 133.2,
+          "distance_km": 1331.2,
+          "revenue_inr": 0,
+          "diesel_inr": 29952,
+          "toll_inr": 6656,
+          "co2_kg": 891.9,
+          "path": [
+            [
+              79.09,
+              21.15
+            ],
+            [
+              78.39500000000001,
+              16.13
+            ],
+            [
+              77.34,
+              11.11
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "NAG"
+        }
+      ],
+      "totals": {
+        "total_km": 4751.1,
+        "loaded_km": 3419.9,
+        "empty_km": 1331.2,
+        "empty_pct": 28.0,
+        "revenue_inr": 181255,
+        "diesel_inr": 106899,
+        "toll_inr": 23756,
+        "profit_inr": 50600,
+        "co2_kg": 3183.2,
+        "loads_served": 3,
+        "loads_total": 40,
+        "trucks_used": 1,
+        "idle_h": 34.8
+      }
+    },
+    {
+      "truck_id": "T02",
+      "legs": [
+        {
+          "truck_id": "T02",
+          "seq": 0,
+          "kind": "loaded",
+          "to": "HYD",
+          "load_id": "L005",
+          "depart_h": 3.0,
+          "arrive_h": 12.8,
+          "distance_km": 588.6,
+          "revenue_inr": 31196,
+          "diesel_inr": 13244,
+          "toll_inr": 2943,
+          "co2_kg": 394.4,
+          "path": [
+            [
+              77.59,
+              12.97
+            ],
+            [
+              78.22,
+              15.18
+            ],
+            [
+              78.49,
+              17.39
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "BLR"
+        },
+        {
+          "truck_id": "T02",
+          "seq": 1,
+          "kind": "loaded",
+          "to": "NAG",
+          "load_id": "L006",
+          "depart_h": 15.8,
+          "arrive_h": 24.1,
+          "distance_km": 497.5,
+          "revenue_inr": 26368,
+          "diesel_inr": 11194,
+          "toll_inr": 2488,
+          "co2_kg": 333.3,
+          "path": [
+            [
+              78.49,
+              17.39
+            ],
+            [
+              78.97,
+              19.27
+            ],
+            [
+              79.09,
+              21.15
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "HYD"
+        },
+        {
+          "truck_id": "T02",
+          "seq": 2,
+          "kind": "loaded",
+          "to": "CHE",
+          "load_id": "L007",
+          "depart_h": 27.1,
+          "arrive_h": 51.9,
+          "distance_km": 1066.1,
+          "revenue_inr": 56503,
+          "diesel_inr": 23987,
+          "toll_inr": 5330,
+          "co2_kg": 714.3,
+          "path": [
+            [
+              79.09,
+              21.15
+            ],
+            [
+              79.86000000000001,
+              17.115
+            ],
+            [
+              80.27,
+              13.08
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "NAG"
+        },
+        {
+          "truck_id": "T02",
+          "seq": 3,
+          "kind": "empty",
+          "to": "BLR",
+          "load_id": null,
+          "depart_h": 54.9,
+          "arrive_h": 60.1,
+          "distance_km": 316.6,
+          "revenue_inr": 0,
+          "diesel_inr": 7124,
+          "toll_inr": 1583,
+          "co2_kg": 212.1,
+          "path": [
+            [
+              80.27,
+              13.08
+            ],
+            [
+              79.11000000000001,
+              13.025
+            ],
+            [
+              77.59,
+              12.97
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "CHE"
+        }
+      ],
+      "totals": {
+        "total_km": 2468.8,
+        "loaded_km": 2152.2,
+        "empty_km": 316.6,
+        "empty_pct": 12.8,
+        "revenue_inr": 114067,
+        "diesel_inr": 55549,
+        "toll_inr": 12344,
+        "profit_inr": 46174,
+        "co2_kg": 1654.1,
+        "loads_served": 3,
+        "loads_total": 40,
+        "trucks_used": 1,
+        "idle_h": 107.9
+      }
+    },
+    {
+      "truck_id": "T03",
+      "legs": [
+        {
+          "truck_id": "T03",
+          "seq": 0,
+          "kind": "loaded",
+          "to": "AMD",
+          "load_id": "L009",
+          "depart_h": 3.0,
+          "arrive_h": 11.6,
+          "distance_km": 517.4,
+          "revenue_inr": 27422,
+          "diesel_inr": 11642,
+          "toll_inr": 2587,
+          "co2_kg": 346.7,
+          "path": [
+            [
+              72.88,
+              19.08
+            ],
+            [
+              72.905,
+              21.049999999999997
+            ],
+            [
+              72.57,
+              23.02
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "MUM"
+        },
+        {
+          "truck_id": "T03",
+          "seq": 1,
+          "kind": "loaded",
+          "to": "JAI",
+          "load_id": "L010",
+          "depart_h": 14.6,
+          "arrive_h": 32.2,
+          "distance_km": 635.6,
+          "revenue_inr": 33687,
+          "diesel_inr": 14301,
+          "toll_inr": 3178,
+          "co2_kg": 425.9,
+          "path": [
+            [
+              72.57,
+              23.02
+            ],
+            [
+              74.36000000000001,
+              24.965
+            ],
+            [
+              75.79,
+              26.91
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "AMD"
+        },
+        {
+          "truck_id": "T03",
+          "seq": 2,
+          "kind": "loaded",
+          "to": "PUN",
+          "load_id": "L011",
+          "depart_h": 35.2,
+          "arrive_h": 60.9,
+          "distance_km": 1122.3,
+          "revenue_inr": 59482,
+          "diesel_inr": 25252,
+          "toll_inr": 5612,
+          "co2_kg": 751.9,
+          "path": [
+            [
+              75.79,
+              26.91
+            ],
+            [
+              75.00500000000001,
+              22.715
+            ],
+            [
+              73.86,
+              18.52
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "JAI"
+        },
+        {
+          "truck_id": "T03",
+          "seq": 3,
+          "kind": "loaded",
+          "to": "MUM",
+          "load_id": "L012",
+          "depart_h": 63.9,
+          "arrive_h": 66.2,
+          "distance_km": 136.9,
+          "revenue_inr": 7256,
+          "diesel_inr": 3080,
+          "toll_inr": 684,
+          "co2_kg": 91.7,
+          "path": [
+            [
+              73.86,
+              18.52
+            ],
+            [
+              73.55000000000001,
+              18.799999999999997
+            ],
+            [
+              72.88,
+              19.08
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "PUN"
+        }
+      ],
+      "totals": {
+        "total_km": 2412.2,
+        "loaded_km": 2412.2,
+        "empty_km": 0,
+        "empty_pct": 0.0,
+        "revenue_inr": 127847,
+        "diesel_inr": 54275,
+        "toll_inr": 12061,
+        "profit_inr": 61511,
+        "co2_kg": 1616.2,
+        "loads_served": 4,
+        "loads_total": 40,
+        "trucks_used": 1,
+        "idle_h": 101.8
+      }
+    },
+    {
+      "truck_id": "T04",
+      "legs": [
+        {
+          "truck_id": "T04",
+          "seq": 0,
+          "kind": "loaded",
+          "to": "DEL",
+          "load_id": "L013",
+          "depart_h": 3.0,
+          "arrive_h": 30.0,
+          "distance_km": 1199.0,
+          "revenue_inr": 63547,
+          "diesel_inr": 26978,
+          "toll_inr": 5995,
+          "co2_kg": 803.3,
+          "path": [
+            [
+              73.79,
+              19.99
+            ],
+            [
+              75.68,
+              24.299999999999997
+            ],
+            [
+              77.21,
+              28.61
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "NSK"
+        },
+        {
+          "truck_id": "T04",
+          "seq": 1,
+          "kind": "loaded",
+          "to": "KNP",
+          "load_id": "L014",
+          "depart_h": 33.0,
+          "arrive_h": 40.7,
+          "distance_km": 464.3,
+          "revenue_inr": 24608,
+          "diesel_inr": 10447,
+          "toll_inr": 2322,
+          "co2_kg": 311.1,
+          "path": [
+            [
+              77.21,
+              28.61
+            ],
+            [
+              78.95,
+              27.53
+            ],
+            [
+              80.33,
+              26.45
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "DEL"
+        },
+        {
+          "truck_id": "T04",
+          "seq": 2,
+          "kind": "loaded",
+          "to": "IDR",
+          "load_id": "L015",
+          "depart_h": 43.7,
+          "arrive_h": 62.7,
+          "distance_km": 719.0,
+          "revenue_inr": 38107,
+          "diesel_inr": 16178,
+          "toll_inr": 3595,
+          "co2_kg": 481.7,
+          "path": [
+            [
+              80.33,
+              26.45
+            ],
+            [
+              78.275,
+              24.585
+            ],
+            [
+              75.86,
+              22.72
+            ]
+          ],
+          "compliance": {
+            "ok": false,
+            "issues": [
+              {
+                "code": "EWAY_EXPIRES",
+                "severity": "error",
+                "message": "E-way bill expires at 58h but delivery is planned at 63h"
+              }
+            ]
+          },
+          "from": "KNP"
+        },
+        {
+          "truck_id": "T04",
+          "seq": 3,
+          "kind": "empty",
+          "to": "NSK",
+          "load_id": null,
+          "depart_h": 65.7,
+          "arrive_h": 72.9,
+          "distance_km": 433.0,
+          "revenue_inr": 0,
+          "diesel_inr": 9742,
+          "toll_inr": 2165,
+          "co2_kg": 290.1,
+          "path": [
+            [
+              75.86,
+              22.72
+            ],
+            [
+              75.00500000000001,
+              21.354999999999997
+            ],
+            [
+              73.79,
+              19.99
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "IDR"
+        }
+      ],
+      "totals": {
+        "total_km": 2815.3,
+        "loaded_km": 2382.3,
+        "empty_km": 433.0,
+        "empty_pct": 15.4,
+        "revenue_inr": 126262,
+        "diesel_inr": 63345,
+        "toll_inr": 14077,
+        "profit_inr": 48840,
+        "co2_kg": 1886.2,
+        "loads_served": 3,
+        "loads_total": 40,
+        "trucks_used": 1,
+        "idle_h": 95.1
+      }
+    },
+    {
+      "truck_id": "T05",
+      "legs": [
+        {
+          "truck_id": "T05",
+          "seq": 0,
+          "kind": "loaded",
+          "to": "TPR",
+          "load_id": "L017",
+          "depart_h": 3.0,
+          "arrive_h": 44.6,
+          "distance_km": 1656.4,
+          "revenue_inr": 87789,
+          "diesel_inr": 37269,
+          "toll_inr": 8282,
+          "co2_kg": 1109.8,
+          "path": [
+            [
+              70.8,
+              22.3
+            ],
+            [
+              74.25,
+              16.705
+            ],
+            [
+              77.34,
+              11.11
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "RJK"
+        },
+        {
+          "truck_id": "T05",
+          "seq": 1,
+          "kind": "loaded",
+          "to": "CBE",
+          "load_id": "L018",
+          "depart_h": 47.6,
+          "arrive_h": 48.4,
+          "distance_km": 46.4,
+          "revenue_inr": 2459,
+          "diesel_inr": 1044,
+          "toll_inr": 232,
+          "co2_kg": 31.1,
+          "path": [
+            [
+              77.34,
+              11.11
+            ],
+            [
+              77.33000000000001,
+              11.065
+            ],
+            [
+              76.96,
+              11.02
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "TPR"
+        },
+        {
+          "truck_id": "T05",
+          "seq": 2,
+          "kind": "loaded",
+          "to": "AMD",
+          "load_id": "L019",
+          "depart_h": 51.4,
+          "arrive_h": 93.0,
+          "distance_km": 1654.9,
+          "revenue_inr": 87710,
+          "diesel_inr": 37235,
+          "toll_inr": 8274,
+          "co2_kg": 1108.8,
+          "path": [
+            [
+              76.96,
+              11.02
+            ],
+            [
+              74.945,
+              17.02
+            ],
+            [
+              72.57,
+              23.02
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "CBE"
+        },
+        {
+          "truck_id": "T05",
+          "seq": 3,
+          "kind": "loaded",
+          "to": "RJK",
+          "load_id": "L020",
+          "depart_h": 96.0,
+          "arrive_h": 99.8,
+          "distance_km": 229.2,
+          "revenue_inr": 12148,
+          "diesel_inr": 5157,
+          "toll_inr": 1146,
+          "co2_kg": 153.6,
+          "path": [
+            [
+              72.57,
+              23.02
+            ],
+            [
+              71.86500000000001,
+              22.66
+            ],
+            [
+              70.8,
+              22.3
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "AMD"
+        }
+      ],
+      "totals": {
+        "total_km": 3586.9,
+        "loaded_km": 3586.9,
+        "empty_km": 0,
+        "empty_pct": 0.0,
+        "revenue_inr": 190106,
+        "diesel_inr": 80705,
+        "toll_inr": 17934,
+        "profit_inr": 91467,
+        "co2_kg": 2403.3,
+        "loads_served": 4,
+        "loads_total": 40,
+        "trucks_used": 1,
+        "idle_h": 68.2
+      }
+    },
+    {
+      "truck_id": "T06",
+      "legs": [
+        {
+          "truck_id": "T06",
+          "seq": 0,
+          "kind": "loaded",
+          "to": "VGA",
+          "load_id": "L021",
+          "depart_h": 3.0,
+          "arrive_h": 10.5,
+          "distance_km": 451.5,
+          "revenue_inr": 23930,
+          "diesel_inr": 10159,
+          "toll_inr": 2258,
+          "co2_kg": 302.5,
+          "path": [
+            [
+              80.27,
+              13.08
+            ],
+            [
+              80.64000000000001,
+              14.795000000000002
+            ],
+            [
+              80.65,
+              16.51
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "CHE"
+        },
+        {
+          "truck_id": "T06",
+          "seq": 1,
+          "kind": "loaded",
+          "to": "VTZ",
+          "load_id": "L022",
+          "depart_h": 13.5,
+          "arrive_h": 19.2,
+          "distance_km": 340.4,
+          "revenue_inr": 18041,
+          "diesel_inr": 7659,
+          "toll_inr": 1702,
+          "co2_kg": 228.1,
+          "path": [
+            [
+              80.65,
+              16.51
+            ],
+            [
+              82.11500000000001,
+              17.1
+            ],
+            [
+              83.22,
+              17.69
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "VGA"
+        },
+        {
+          "truck_id": "T06",
+          "seq": 2,
+          "kind": "loaded",
+          "to": "HYD",
+          "load_id": "L023",
+          "depart_h": 22.2,
+          "arrive_h": 31.5,
+          "distance_km": 559.5,
+          "revenue_inr": 29654,
+          "diesel_inr": 12589,
+          "toll_inr": 2798,
+          "co2_kg": 374.9,
+          "path": [
+            [
+              83.22,
+              17.69
+            ],
+            [
+              81.035,
+              17.54
+            ],
+            [
+              78.49,
+              17.39
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "VTZ"
+        },
+        {
+          "truck_id": "T06",
+          "seq": 3,
+          "kind": "empty",
+          "to": "CHE",
+          "load_id": null,
+          "depart_h": 34.5,
+          "arrive_h": 51.6,
+          "distance_km": 602.3,
+          "revenue_inr": 0,
+          "diesel_inr": 13552,
+          "toll_inr": 3012,
+          "co2_kg": 403.5,
+          "path": [
+            [
+              78.49,
+              17.39
+            ],
+            [
+              79.56,
+              15.235
+            ],
+            [
+              80.27,
+              13.08
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "HYD"
+        }
+      ],
+      "totals": {
+        "total_km": 1953.7,
+        "loaded_km": 1351.4,
+        "empty_km": 602.3,
+        "empty_pct": 30.8,
+        "revenue_inr": 71625,
+        "diesel_inr": 43959,
+        "toll_inr": 9770,
+        "profit_inr": 17896,
+        "co2_kg": 1309.0,
+        "loads_served": 3,
+        "loads_total": 40,
+        "trucks_used": 1,
+        "idle_h": 116.4
+      }
+    },
+    {
+      "truck_id": "T07",
+      "legs": [
+        {
+          "truck_id": "T07",
+          "seq": 0,
+          "kind": "loaded",
+          "to": "RPR",
+          "load_id": "L025",
+          "depart_h": 3.0,
+          "arrive_h": 23.5,
+          "distance_km": 812.7,
+          "revenue_inr": 43073,
+          "diesel_inr": 18286,
+          "toll_inr": 4064,
+          "co2_kg": 544.5,
+          "path": [
+            [
+              88.36,
+              22.57
+            ],
+            [
+              85.17500000000001,
+              21.91
+            ],
+            [
+              81.63,
+              21.25
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "KOL"
+        },
+        {
+          "truck_id": "T07",
+          "seq": 1,
+          "kind": "loaded",
+          "to": "NAG",
+          "load_id": "L026",
+          "depart_h": 26.5,
+          "arrive_h": 31.5,
+          "distance_km": 300.0,
+          "revenue_inr": 15900,
+          "diesel_inr": 6750,
+          "toll_inr": 1500,
+          "co2_kg": 201.0,
+          "path": [
+            [
+              81.63,
+              21.25
+            ],
+            [
+              80.54,
+              21.2
+            ],
+            [
+              79.09,
+              21.15
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "RPR"
+        },
+        {
+          "truck_id": "T07",
+          "seq": 2,
+          "kind": "loaded",
+          "to": "LKO",
+          "load_id": "L027",
+          "depart_h": 34.5,
+          "arrive_h": 54.5,
+          "distance_km": 778.2,
+          "revenue_inr": 41245,
+          "diesel_inr": 17510,
+          "toll_inr": 3891,
+          "co2_kg": 521.4,
+          "path": [
+            [
+              79.09,
+              21.15
+            ],
+            [
+              80.20000000000002,
+              24.0
+            ],
+            [
+              80.95,
+              26.85
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "NAG"
+        },
+        {
+          "truck_id": "T07",
+          "seq": 3,
+          "kind": "loaded",
+          "to": "KOL",
+          "load_id": "L028",
+          "depart_h": 57.5,
+          "arrive_h": 81.8,
+          "distance_km": 1038.7,
+          "revenue_inr": 55051,
+          "diesel_inr": 23371,
+          "toll_inr": 5194,
+          "co2_kg": 695.9,
+          "path": [
+            [
+              80.95,
+              26.85
+            ],
+            [
+              84.83500000000001,
+              24.71
+            ],
+            [
+              88.36,
+              22.57
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "LKO"
+        }
+      ],
+      "totals": {
+        "total_km": 2929.6,
+        "loaded_km": 2929.6,
+        "empty_km": 0,
+        "empty_pct": 0.0,
+        "revenue_inr": 155269,
+        "diesel_inr": 65917,
+        "toll_inr": 14649,
+        "profit_inr": 74703,
+        "co2_kg": 1962.8,
+        "loads_served": 4,
+        "loads_total": 40,
+        "trucks_used": 1,
+        "idle_h": 86.2
+      }
+    },
+    {
+      "truck_id": "T08",
+      "legs": [
+        {
+          "truck_id": "T08",
+          "seq": 0,
+          "kind": "loaded",
+          "to": "DEL",
+          "load_id": "L029",
+          "depart_h": 3.0,
+          "arrive_h": 8.7,
+          "distance_km": 339.6,
+          "revenue_inr": 17999,
+          "diesel_inr": 7641,
+          "toll_inr": 1698,
+          "co2_kg": 227.5,
+          "path": [
+            [
+              75.86,
+              30.9
+            ],
+            [
+              76.715,
+              29.755
+            ],
+            [
+              77.21,
+              28.61
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "LDH"
+        },
+        {
+          "truck_id": "T08",
+          "seq": 1,
+          "kind": "loaded",
+          "to": "BPL",
+          "load_id": "L030",
+          "depart_h": 11.7,
+          "arrive_h": 30.3,
+          "distance_km": 701.1,
+          "revenue_inr": 37158,
+          "diesel_inr": 15775,
+          "toll_inr": 3506,
+          "co2_kg": 469.7,
+          "path": [
+            [
+              77.21,
+              28.61
+            ],
+            [
+              77.49000000000001,
+              25.935000000000002
+            ],
+            [
+              77.41,
+              23.26
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "DEL"
+        },
+        {
+          "truck_id": "T08",
+          "seq": 2,
+          "kind": "loaded",
+          "to": "JAI",
+          "load_id": "L031",
+          "depart_h": 33.3,
+          "arrive_h": 41.9,
+          "distance_km": 514.9,
+          "revenue_inr": 27290,
+          "diesel_inr": 11585,
+          "toll_inr": 2574,
+          "co2_kg": 345.0,
+          "path": [
+            [
+              77.41,
+              23.26
+            ],
+            [
+              76.78,
+              25.085
+            ],
+            [
+              75.79,
+              26.91
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "BPL"
+        },
+        {
+          "truck_id": "T08",
+          "seq": 3,
+          "kind": "empty",
+          "to": "LDH",
+          "load_id": null,
+          "depart_h": 44.9,
+          "arrive_h": 53.6,
+          "distance_km": 522.7,
+          "revenue_inr": 0,
+          "diesel_inr": 11761,
+          "toll_inr": 2614,
+          "co2_kg": 350.2,
+          "path": [
+            [
+              75.79,
+              26.91
+            ],
+            [
+              76.00500000000001,
+              28.905
+            ],
+            [
+              75.86,
+              30.9
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "JAI"
+        }
+      ],
+      "totals": {
+        "total_km": 2078.3,
+        "loaded_km": 1555.6,
+        "empty_km": 522.7,
+        "empty_pct": 25.2,
+        "revenue_inr": 82447,
+        "diesel_inr": 46762,
+        "toll_inr": 10392,
+        "profit_inr": 25293,
+        "co2_kg": 1392.4,
+        "loads_served": 3,
+        "loads_total": 40,
+        "trucks_used": 1,
+        "idle_h": 114.4
+      }
+    },
+    {
+      "truck_id": "T09",
+      "legs": [
+        {
+          "truck_id": "T09",
+          "seq": 0,
+          "kind": "loaded",
+          "to": "BLR",
+          "load_id": "L033",
+          "depart_h": 3.0,
+          "arrive_h": 10.1,
+          "distance_km": 427.6,
+          "revenue_inr": 22663,
+          "diesel_inr": 9621,
+          "toll_inr": 2138,
+          "co2_kg": 286.5,
+          "path": [
+            [
+              76.27,
+              9.93
+            ],
+            [
+              77.11000000000001,
+              11.45
+            ],
+            [
+              77.59,
+              12.97
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "COK"
+        },
+        {
+          "truck_id": "T09",
+          "seq": 1,
+          "kind": "loaded",
+          "to": "MDU",
+          "load_id": "L034",
+          "depart_h": 13.1,
+          "arrive_h": 19.8,
+          "distance_km": 403.1,
+          "revenue_inr": 21364,
+          "diesel_inr": 9070,
+          "toll_inr": 2016,
+          "co2_kg": 270.1,
+          "path": [
+            [
+              77.59,
+              12.97
+            ],
+            [
+              78.03500000000001,
+              11.45
+            ],
+            [
+              78.12,
+              9.93
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "BLR"
+        },
+        {
+          "truck_id": "T09",
+          "seq": 2,
+          "kind": "loaded",
+          "to": "CBE",
+          "load_id": "L035",
+          "depart_h": 22.8,
+          "arrive_h": 26.1,
+          "distance_km": 197.8,
+          "revenue_inr": 10483,
+          "diesel_inr": 4450,
+          "toll_inr": 989,
+          "co2_kg": 132.5,
+          "path": [
+            [
+              78.12,
+              9.93
+            ],
+            [
+              77.72,
+              10.475
+            ],
+            [
+              76.96,
+              11.02
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "MDU"
+        },
+        {
+          "truck_id": "T09",
+          "seq": 3,
+          "kind": "loaded",
+          "to": "COK",
+          "load_id": "L036",
+          "depart_h": 29.1,
+          "arrive_h": 31.9,
+          "distance_km": 164.4,
+          "revenue_inr": 8713,
+          "diesel_inr": 3699,
+          "toll_inr": 822,
+          "co2_kg": 110.1,
+          "path": [
+            [
+              76.96,
+              11.02
+            ],
+            [
+              76.795,
+              10.475
+            ],
+            [
+              76.27,
+              9.93
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "CBE"
+        }
+      ],
+      "totals": {
+        "total_km": 1192.9,
+        "loaded_km": 1192.9,
+        "empty_km": 0,
+        "empty_pct": 0.0,
+        "revenue_inr": 63223,
+        "diesel_inr": 26840,
+        "toll_inr": 5965,
+        "profit_inr": 30418,
+        "co2_kg": 799.2,
+        "loads_served": 4,
+        "loads_total": 40,
+        "trucks_used": 1,
+        "idle_h": 136.1
+      }
+    },
+    {
+      "truck_id": "T10",
+      "legs": [
+        {
+          "truck_id": "T10",
+          "seq": 0,
+          "kind": "loaded",
+          "to": "MUM",
+          "load_id": "L037",
+          "depart_h": 3.0,
+          "arrive_h": 7.6,
+          "distance_km": 273.8,
+          "revenue_inr": 14511,
+          "diesel_inr": 6160,
+          "toll_inr": 1369,
+          "co2_kg": 183.4,
+          "path": [
+            [
+              72.83,
+              21.17
+            ],
+            [
+              73.035,
+              20.125
+            ],
+            [
+              72.88,
+              19.08
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "SRT"
+        },
+        {
+          "truck_id": "T10",
+          "seq": 1,
+          "kind": "loaded",
+          "to": "PUN",
+          "load_id": "L038",
+          "depart_h": 10.6,
+          "arrive_h": 12.8,
+          "distance_km": 136.9,
+          "revenue_inr": 7256,
+          "diesel_inr": 3080,
+          "toll_inr": 684,
+          "co2_kg": 91.7,
+          "path": [
+            [
+              72.88,
+              19.08
+            ],
+            [
+              73.55000000000001,
+              18.799999999999997
+            ],
+            [
+              73.86,
+              18.52
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "MUM"
+        },
+        {
+          "truck_id": "T10",
+          "seq": 2,
+          "kind": "loaded",
+          "to": "AMD",
+          "load_id": "L039",
+          "depart_h": 15.8,
+          "arrive_h": 33.0,
+          "distance_km": 608.7,
+          "revenue_inr": 32261,
+          "diesel_inr": 13696,
+          "toll_inr": 3044,
+          "co2_kg": 407.8,
+          "path": [
+            [
+              73.86,
+              18.52
+            ],
+            [
+              73.39500000000001,
+              20.77
+            ],
+            [
+              72.57,
+              23.02
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "PUN"
+        },
+        {
+          "truck_id": "T10",
+          "seq": 3,
+          "kind": "empty",
+          "to": "SRT",
+          "load_id": null,
+          "depart_h": 36.0,
+          "arrive_h": 40.1,
+          "distance_km": 244.2,
+          "revenue_inr": 0,
+          "diesel_inr": 5494,
+          "toll_inr": 1221,
+          "co2_kg": 163.6,
+          "path": [
+            [
+              72.57,
+              23.02
+            ],
+            [
+              72.88,
+              22.095
+            ],
+            [
+              72.83,
+              21.17
+            ]
+          ],
+          "compliance": {
+            "ok": true,
+            "issues": []
+          },
+          "from": "AMD"
+        }
+      ],
+      "totals": {
+        "total_km": 1263.6,
+        "loaded_km": 1019.4,
+        "empty_km": 244.2,
+        "empty_pct": 19.3,
+        "revenue_inr": 54028,
+        "diesel_inr": 28430,
+        "toll_inr": 6318,
+        "profit_inr": 19280,
+        "co2_kg": 846.5,
+        "loads_served": 3,
+        "loads_total": 40,
+        "trucks_used": 1,
+        "idle_h": 127.9
+      }
+    }
+  ],
+  "unassigned_loads": [
+    "L004",
+    "L008",
+    "L016",
+    "L024",
+    "L032",
+    "L040"
+  ],
+  "metrics": {
+    "total_km": 25452.4,
+    "loaded_km": 22002.4,
+    "empty_km": 3450.0,
+    "empty_pct": 13.6,
+    "revenue_inr": 1166129,
+    "diesel_inr": 572681,
+    "toll_inr": 127266,
+    "profit_inr": 466182,
+    "co2_kg": 17052.9,
+    "loads_served": 34,
+    "loads_total": 40,
+    "trucks_used": 10,
+    "idle_h": 988.8
+  }
+}

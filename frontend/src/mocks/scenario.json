@@ -1,0 +1,1134 @@
+{
+  "week_start": "2026-11-09T00:00:00+05:30",
+  "cities": [
+    {
+      "id": "DEL",
+      "name": "Delhi",
+      "state": "Delhi",
+      "lat": 28.61,
+      "lon": 77.21
+    },
+    {
+      "id": "MUM",
+      "name": "Mumbai",
+      "state": "Maharashtra",
+      "lat": 19.08,
+      "lon": 72.88
+    },
+    {
+      "id": "BLR",
+      "name": "Bengaluru",
+      "state": "Karnataka",
+      "lat": 12.97,
+      "lon": 77.59
+    },
+    {
+      "id": "CHE",
+      "name": "Chennai",
+      "state": "Tamil Nadu",
+      "lat": 13.08,
+      "lon": 80.27
+    },
+    {
+      "id": "HYD",
+      "name": "Hyderabad",
+      "state": "Telangana",
+      "lat": 17.39,
+      "lon": 78.49
+    },
+    {
+      "id": "KOL",
+      "name": "Kolkata",
+      "state": "West Bengal",
+      "lat": 22.57,
+      "lon": 88.36
+    },
+    {
+      "id": "AMD",
+      "name": "Ahmedabad",
+      "state": "Gujarat",
+      "lat": 23.02,
+      "lon": 72.57
+    },
+    {
+      "id": "PUN",
+      "name": "Pune",
+      "state": "Maharashtra",
+      "lat": 18.52,
+      "lon": 73.86
+    },
+    {
+      "id": "JAI",
+      "name": "Jaipur",
+      "state": "Rajasthan",
+      "lat": 26.91,
+      "lon": 75.79
+    },
+    {
+      "id": "NAG",
+      "name": "Nagpur",
+      "state": "Maharashtra",
+      "lat": 21.15,
+      "lon": 79.09
+    },
+    {
+      "id": "NSK",
+      "name": "Nashik",
+      "state": "Maharashtra",
+      "lat": 19.99,
+      "lon": 73.79
+    },
+    {
+      "id": "TPR",
+      "name": "Tiruppur",
+      "state": "Tamil Nadu",
+      "lat": 11.11,
+      "lon": 77.34
+    },
+    {
+      "id": "CBE",
+      "name": "Coimbatore",
+      "state": "Tamil Nadu",
+      "lat": 11.02,
+      "lon": 76.96
+    },
+    {
+      "id": "IDR",
+      "name": "Indore",
+      "state": "Madhya Pradesh",
+      "lat": 22.72,
+      "lon": 75.86
+    },
+    {
+      "id": "SRT",
+      "name": "Surat",
+      "state": "Gujarat",
+      "lat": 21.17,
+      "lon": 72.83
+    },
+    {
+      "id": "LDH",
+      "name": "Ludhiana",
+      "state": "Punjab",
+      "lat": 30.9,
+      "lon": 75.86
+    },
+    {
+      "id": "KNP",
+      "name": "Kanpur",
+      "state": "Uttar Pradesh",
+      "lat": 26.45,
+      "lon": 80.33
+    },
+    {
+      "id": "LKO",
+      "name": "Lucknow",
+      "state": "Uttar Pradesh",
+      "lat": 26.85,
+      "lon": 80.95
+    },
+    {
+      "id": "VTZ",
+      "name": "Visakhapatnam",
+      "state": "Andhra Pradesh",
+      "lat": 17.69,
+      "lon": 83.22
+    },
+    {
+      "id": "COK",
+      "name": "Kochi",
+      "state": "Kerala",
+      "lat": 9.93,
+      "lon": 76.27
+    },
+    {
+      "id": "RPR",
+      "name": "Raipur",
+      "state": "Chhattisgarh",
+      "lat": 21.25,
+      "lon": 81.63
+    },
+    {
+      "id": "BPL",
+      "name": "Bhopal",
+      "state": "Madhya Pradesh",
+      "lat": 23.26,
+      "lon": 77.41
+    },
+    {
+      "id": "RJK",
+      "name": "Rajkot",
+      "state": "Gujarat",
+      "lat": 22.3,
+      "lon": 70.8
+    },
+    {
+      "id": "MDU",
+      "name": "Madurai",
+      "state": "Tamil Nadu",
+      "lat": 9.93,
+      "lon": 78.12
+    },
+    {
+      "id": "VGA",
+      "name": "Vijayawada",
+      "state": "Andhra Pradesh",
+      "lat": 16.51,
+      "lon": 80.65
+    }
+  ],
+  "owners": [
+    {
+      "id": "O1",
+      "name": "Raju Transport",
+      "home_city": "TPR",
+      "trucks": [
+        "T01",
+        "T05",
+        "T09"
+      ]
+    },
+    {
+      "id": "O2",
+      "name": "Deccan Logistics",
+      "home_city": "BLR",
+      "trucks": [
+        "T02",
+        "T06",
+        "T10"
+      ]
+    },
+    {
+      "id": "O3",
+      "name": "Northern Freight",
+      "home_city": "DEL",
+      "trucks": [
+        "T03",
+        "T07"
+      ]
+    },
+    {
+      "id": "O4",
+      "name": "Western Carriers",
+      "home_city": "AMD",
+      "trucks": [
+        "T04",
+        "T08"
+      ]
+    }
+  ],
+  "trucks": [
+    {
+      "id": "T01",
+      "owner_id": "O1",
+      "reg_no": "TN39AB1234",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "TPR",
+      "start_city": "TPR",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Murugan",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T02",
+      "owner_id": "O2",
+      "reg_no": "TN39AB1235",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "BLR",
+      "start_city": "BLR",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Ravi",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T03",
+      "owner_id": "O3",
+      "reg_no": "TN39AB1236",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "MUM",
+      "start_city": "MUM",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Arjun",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T04",
+      "owner_id": "O4",
+      "reg_no": "TN39AB1237",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "NSK",
+      "start_city": "NSK",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Kumar",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T05",
+      "owner_id": "O1",
+      "reg_no": "TN39AB1238",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "RJK",
+      "start_city": "RJK",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Selvam",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T06",
+      "owner_id": "O2",
+      "reg_no": "TN39AB1239",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "CHE",
+      "start_city": "CHE",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Murugan",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T07",
+      "owner_id": "O3",
+      "reg_no": "TN39AB1240",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "KOL",
+      "start_city": "KOL",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Ravi",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T08",
+      "owner_id": "O4",
+      "reg_no": "TN39AB1241",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "LDH",
+      "start_city": "LDH",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Arjun",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T09",
+      "owner_id": "O1",
+      "reg_no": "TN39AB1242",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "COK",
+      "start_city": "COK",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Kumar",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T10",
+      "owner_id": "O2",
+      "reg_no": "TN39AB1243",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "SRT",
+      "start_city": "SRT",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Selvam",
+        "language": "ta"
+      }
+    }
+  ],
+  "loads": [
+    {
+      "id": "L001",
+      "origin": "TPR",
+      "destination": "DEL",
+      "commodity": "Textiles",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 2.0,
+      "pickup_end_h": 6.0,
+      "deliver_by_h": 66.2,
+      "freight_inr": 121487,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560000",
+        "valid_until_h": 86.2,
+        "vehicle_reg": "TN39AB1234"
+      }
+    },
+    {
+      "id": "L002",
+      "origin": "DEL",
+      "destination": "JAI",
+      "commodity": "FMCG",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 64.2,
+      "pickup_end_h": 68.2,
+      "deliver_by_h": 73.8,
+      "freight_inr": 14771,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560001",
+        "valid_until_h": 93.8,
+        "vehicle_reg": "TN39AB1234"
+      }
+    },
+    {
+      "id": "L003",
+      "origin": "JAI",
+      "destination": "NAG",
+      "commodity": "Marble",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 71.8,
+      "pickup_end_h": 75.8,
+      "deliver_by_h": 98.0,
+      "freight_inr": 44997,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560002",
+        "valid_until_h": 89.0,
+        "vehicle_reg": "TN39AB1234"
+      }
+    },
+    {
+      "id": "L004",
+      "origin": "NAG",
+      "destination": "TPR",
+      "commodity": "Oranges",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 96.0,
+      "pickup_end_h": 100.0,
+      "deliver_by_h": 137.2,
+      "freight_inr": 70554,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560003",
+        "valid_until_h": 157.2,
+        "vehicle_reg": "TN39AB1234"
+      }
+    },
+    {
+      "id": "L005",
+      "origin": "BLR",
+      "destination": "HYD",
+      "commodity": "Textiles",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 2.0,
+      "pickup_end_h": 6.0,
+      "deliver_by_h": 16.8,
+      "freight_inr": 31196,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560004",
+        "valid_until_h": 36.8,
+        "vehicle_reg": "TN39AB1235"
+      }
+    },
+    {
+      "id": "L006",
+      "origin": "HYD",
+      "destination": "NAG",
+      "commodity": "FMCG",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 14.8,
+      "pickup_end_h": 18.8,
+      "deliver_by_h": 28.1,
+      "freight_inr": 26368,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560005",
+        "valid_until_h": 48.1,
+        "vehicle_reg": "TN39AB1235"
+      }
+    },
+    {
+      "id": "L007",
+      "origin": "NAG",
+      "destination": "CHE",
+      "commodity": "Marble",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 26.1,
+      "pickup_end_h": 30.1,
+      "deliver_by_h": 55.9,
+      "freight_inr": 56503,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560006",
+        "valid_until_h": 75.9,
+        "vehicle_reg": "TN39AB1235"
+      }
+    },
+    {
+      "id": "L008",
+      "origin": "CHE",
+      "destination": "BLR",
+      "commodity": "Oranges",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 53.9,
+      "pickup_end_h": 57.9,
+      "deliver_by_h": 64.1,
+      "freight_inr": 16780,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560007",
+        "valid_until_h": 84.1,
+        "vehicle_reg": "TN39AB1235"
+      }
+    },
+    {
+      "id": "L009",
+      "origin": "MUM",
+      "destination": "AMD",
+      "commodity": "Textiles",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 2.0,
+      "pickup_end_h": 6.0,
+      "deliver_by_h": 15.6,
+      "freight_inr": 27422,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560008",
+        "valid_until_h": 35.6,
+        "vehicle_reg": "TN39AB1236"
+      }
+    },
+    {
+      "id": "L010",
+      "origin": "AMD",
+      "destination": "JAI",
+      "commodity": "FMCG",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 13.6,
+      "pickup_end_h": 17.6,
+      "deliver_by_h": 36.2,
+      "freight_inr": 33687,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560009",
+        "valid_until_h": 56.2,
+        "vehicle_reg": "TN39AB1236"
+      }
+    },
+    {
+      "id": "L011",
+      "origin": "JAI",
+      "destination": "PUN",
+      "commodity": "Marble",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 34.2,
+      "pickup_end_h": 38.2,
+      "deliver_by_h": 64.9,
+      "freight_inr": 59482,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560010",
+        "valid_until_h": 84.9,
+        "vehicle_reg": "TN39AB1236"
+      }
+    },
+    {
+      "id": "L012",
+      "origin": "PUN",
+      "destination": "MUM",
+      "commodity": "Oranges",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 62.9,
+      "pickup_end_h": 66.9,
+      "deliver_by_h": 70.2,
+      "freight_inr": 7256,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560011",
+        "valid_until_h": 90.2,
+        "vehicle_reg": "TN39AB1236"
+      }
+    },
+    {
+      "id": "L013",
+      "origin": "NSK",
+      "destination": "DEL",
+      "commodity": "Textiles",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 2.0,
+      "pickup_end_h": 6.0,
+      "deliver_by_h": 34.0,
+      "freight_inr": 63547,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560012",
+        "valid_until_h": 54.0,
+        "vehicle_reg": "TN39AB1237"
+      }
+    },
+    {
+      "id": "L014",
+      "origin": "DEL",
+      "destination": "KNP",
+      "commodity": "FMCG",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 32.0,
+      "pickup_end_h": 36.0,
+      "deliver_by_h": 44.7,
+      "freight_inr": 24608,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560013",
+        "valid_until_h": 64.7,
+        "vehicle_reg": "TN39AB1237"
+      }
+    },
+    {
+      "id": "L015",
+      "origin": "KNP",
+      "destination": "IDR",
+      "commodity": "Marble",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 42.7,
+      "pickup_end_h": 46.7,
+      "deliver_by_h": 66.7,
+      "freight_inr": 38107,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560014",
+        "valid_until_h": 57.7,
+        "vehicle_reg": "TN39AB1237"
+      }
+    },
+    {
+      "id": "L016",
+      "origin": "IDR",
+      "destination": "NSK",
+      "commodity": "Oranges",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 64.7,
+      "pickup_end_h": 68.7,
+      "deliver_by_h": 76.9,
+      "freight_inr": 22949,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560015",
+        "valid_until_h": 96.9,
+        "vehicle_reg": "TN39AB1237"
+      }
+    },
+    {
+      "id": "L017",
+      "origin": "RJK",
+      "destination": "TPR",
+      "commodity": "Textiles",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 2.0,
+      "pickup_end_h": 6.0,
+      "deliver_by_h": 48.6,
+      "freight_inr": 87789,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560016",
+        "valid_until_h": 68.6,
+        "vehicle_reg": "TN39AB1238"
+      }
+    },
+    {
+      "id": "L018",
+      "origin": "TPR",
+      "destination": "CBE",
+      "commodity": "FMCG",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 46.6,
+      "pickup_end_h": 50.6,
+      "deliver_by_h": 52.4,
+      "freight_inr": 2459,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560017",
+        "valid_until_h": 72.4,
+        "vehicle_reg": "TN39AB1238"
+      }
+    },
+    {
+      "id": "L019",
+      "origin": "CBE",
+      "destination": "AMD",
+      "commodity": "Marble",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 50.4,
+      "pickup_end_h": 54.4,
+      "deliver_by_h": 97.0,
+      "freight_inr": 87710,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560018",
+        "valid_until_h": 117.0,
+        "vehicle_reg": "TN39AB1238"
+      }
+    },
+    {
+      "id": "L020",
+      "origin": "AMD",
+      "destination": "RJK",
+      "commodity": "Oranges",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 95.0,
+      "pickup_end_h": 99.0,
+      "deliver_by_h": 103.8,
+      "freight_inr": 12148,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560019",
+        "valid_until_h": 123.8,
+        "vehicle_reg": "TN39AB1238"
+      }
+    },
+    {
+      "id": "L021",
+      "origin": "CHE",
+      "destination": "VGA",
+      "commodity": "Textiles",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 2.0,
+      "pickup_end_h": 6.0,
+      "deliver_by_h": 14.5,
+      "freight_inr": 23930,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560020",
+        "valid_until_h": 34.5,
+        "vehicle_reg": "TN39AB1239"
+      }
+    },
+    {
+      "id": "L022",
+      "origin": "VGA",
+      "destination": "VTZ",
+      "commodity": "FMCG",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 12.5,
+      "pickup_end_h": 16.5,
+      "deliver_by_h": 23.2,
+      "freight_inr": 18041,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560021",
+        "valid_until_h": 43.2,
+        "vehicle_reg": "TN39AB1239"
+      }
+    },
+    {
+      "id": "L023",
+      "origin": "VTZ",
+      "destination": "HYD",
+      "commodity": "Marble",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 21.2,
+      "pickup_end_h": 25.2,
+      "deliver_by_h": 35.5,
+      "freight_inr": 29654,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560022",
+        "valid_until_h": 55.5,
+        "vehicle_reg": "TN39AB1239"
+      }
+    },
+    {
+      "id": "L024",
+      "origin": "HYD",
+      "destination": "CHE",
+      "commodity": "Oranges",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 33.5,
+      "pickup_end_h": 37.5,
+      "deliver_by_h": 55.6,
+      "freight_inr": 31922,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560023",
+        "valid_until_h": 75.6,
+        "vehicle_reg": "TN39AB1239"
+      }
+    },
+    {
+      "id": "L025",
+      "origin": "KOL",
+      "destination": "RPR",
+      "commodity": "Textiles",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 2.0,
+      "pickup_end_h": 6.0,
+      "deliver_by_h": 27.5,
+      "freight_inr": 43073,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560024",
+        "valid_until_h": 47.5,
+        "vehicle_reg": "TN39AB1240"
+      }
+    },
+    {
+      "id": "L026",
+      "origin": "RPR",
+      "destination": "NAG",
+      "commodity": "FMCG",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 25.5,
+      "pickup_end_h": 29.5,
+      "deliver_by_h": 35.5,
+      "freight_inr": 15900,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560025",
+        "valid_until_h": 55.5,
+        "vehicle_reg": "TN39AB1240"
+      }
+    },
+    {
+      "id": "L027",
+      "origin": "NAG",
+      "destination": "LKO",
+      "commodity": "Marble",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 33.5,
+      "pickup_end_h": 37.5,
+      "deliver_by_h": 58.5,
+      "freight_inr": 41245,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560026",
+        "valid_until_h": 78.5,
+        "vehicle_reg": "TN39AB1240"
+      }
+    },
+    {
+      "id": "L028",
+      "origin": "LKO",
+      "destination": "KOL",
+      "commodity": "Oranges",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 56.5,
+      "pickup_end_h": 60.5,
+      "deliver_by_h": 85.8,
+      "freight_inr": 55051,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560027",
+        "valid_until_h": 105.8,
+        "vehicle_reg": "TN39AB1240"
+      }
+    },
+    {
+      "id": "L029",
+      "origin": "LDH",
+      "destination": "DEL",
+      "commodity": "Textiles",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 2.0,
+      "pickup_end_h": 6.0,
+      "deliver_by_h": 12.7,
+      "freight_inr": 17999,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560028",
+        "valid_until_h": 32.7,
+        "vehicle_reg": "TN39AB1241"
+      }
+    },
+    {
+      "id": "L030",
+      "origin": "DEL",
+      "destination": "BPL",
+      "commodity": "FMCG",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 10.7,
+      "pickup_end_h": 14.7,
+      "deliver_by_h": 34.3,
+      "freight_inr": 37158,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560029",
+        "valid_until_h": 54.3,
+        "vehicle_reg": "TN39AB1241"
+      }
+    },
+    {
+      "id": "L031",
+      "origin": "BPL",
+      "destination": "JAI",
+      "commodity": "Marble",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 32.3,
+      "pickup_end_h": 36.3,
+      "deliver_by_h": 45.9,
+      "freight_inr": 27290,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560030",
+        "valid_until_h": 65.9,
+        "vehicle_reg": "TN39AB1241"
+      }
+    },
+    {
+      "id": "L032",
+      "origin": "JAI",
+      "destination": "LDH",
+      "commodity": "Oranges",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 43.9,
+      "pickup_end_h": 47.9,
+      "deliver_by_h": 57.6,
+      "freight_inr": 27703,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560031",
+        "valid_until_h": 77.6,
+        "vehicle_reg": "TN39AB1241"
+      }
+    },
+    {
+      "id": "L033",
+      "origin": "COK",
+      "destination": "BLR",
+      "commodity": "Textiles",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 2.0,
+      "pickup_end_h": 6.0,
+      "deliver_by_h": 14.1,
+      "freight_inr": 22663,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560032",
+        "valid_until_h": 34.1,
+        "vehicle_reg": "TN39AB1242"
+      }
+    },
+    {
+      "id": "L034",
+      "origin": "BLR",
+      "destination": "MDU",
+      "commodity": "FMCG",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 12.1,
+      "pickup_end_h": 16.1,
+      "deliver_by_h": 23.8,
+      "freight_inr": 21364,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560033",
+        "valid_until_h": 43.8,
+        "vehicle_reg": "TN39AB1242"
+      }
+    },
+    {
+      "id": "L035",
+      "origin": "MDU",
+      "destination": "CBE",
+      "commodity": "Marble",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 21.8,
+      "pickup_end_h": 25.8,
+      "deliver_by_h": 30.1,
+      "freight_inr": 10483,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560034",
+        "valid_until_h": 50.1,
+        "vehicle_reg": "TN39AB1242"
+      }
+    },
+    {
+      "id": "L036",
+      "origin": "CBE",
+      "destination": "COK",
+      "commodity": "Oranges",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 28.1,
+      "pickup_end_h": 32.1,
+      "deliver_by_h": 35.9,
+      "freight_inr": 8713,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560035",
+        "valid_until_h": 55.9,
+        "vehicle_reg": "TN39AB1242"
+      }
+    },
+    {
+      "id": "L037",
+      "origin": "SRT",
+      "destination": "MUM",
+      "commodity": "Textiles",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 2.0,
+      "pickup_end_h": 6.0,
+      "deliver_by_h": 11.6,
+      "freight_inr": 14511,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560036",
+        "valid_until_h": 31.6,
+        "vehicle_reg": "TN39AB1243"
+      }
+    },
+    {
+      "id": "L038",
+      "origin": "MUM",
+      "destination": "PUN",
+      "commodity": "FMCG",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 9.6,
+      "pickup_end_h": 13.6,
+      "deliver_by_h": 16.8,
+      "freight_inr": 7256,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560037",
+        "valid_until_h": 36.8,
+        "vehicle_reg": "TN39AB1243"
+      }
+    },
+    {
+      "id": "L039",
+      "origin": "PUN",
+      "destination": "AMD",
+      "commodity": "Marble",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 14.8,
+      "pickup_end_h": 18.8,
+      "deliver_by_h": 37.0,
+      "freight_inr": 32261,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560038",
+        "valid_until_h": 57.0,
+        "vehicle_reg": "TN39AB1243"
+      }
+    },
+    {
+      "id": "L040",
+      "origin": "AMD",
+      "destination": "SRT",
+      "commodity": "Oranges",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 35.0,
+      "pickup_end_h": 39.0,
+      "deliver_by_h": 44.1,
+      "freight_inr": 12943,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1234560039",
+        "valid_until_h": 64.1,
+        "vehicle_reg": "TN39AB1243"
+      }
+    }
+  ]
+}

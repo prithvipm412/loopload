@@ -1,0 +1,39 @@
+{
+  "baseline": {
+    "total_km": 28506.6,
+    "loaded_km": 18823.8,
+    "empty_km": 9682.8,
+    "empty_pct": 34.0,
+    "revenue_inr": 997666,
+    "diesel_inr": 641397,
+    "toll_inr": 142531,
+    "profit_inr": 213738,
+    "co2_kg": 19099.4,
+    "loads_served": 27,
+    "loads_total": 40,
+    "trucks_used": 10,
+    "idle_h": 888.7
+  },
+  "ai": {
+    "total_km": 25452.4,
+    "loaded_km": 22002.4,
+    "empty_km": 3450.0,
+    "empty_pct": 13.6,
+    "revenue_inr": 1166129,
+    "diesel_inr": 572681,
+    "toll_inr": 127266,
+    "profit_inr": 466182,
+    "co2_kg": 17052.9,
+    "loads_served": 34,
+    "loads_total": 40,
+    "trucks_used": 10,
+    "idle_h": 988.8
+  },
+  "delta": {
+    "empty_km": -6232.8,
+    "empty_pct": -20.4,
+    "profit_inr": 252444,
+    "co2_kg": -2046.5,
+    "loads_served": 7
+  }
+}
