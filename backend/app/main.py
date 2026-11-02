@@ -91,6 +91,24 @@ def _fill_paths_and_compliance(plan: dict) -> dict:
     return plan
 
 
+def _with_derived_metrics(metrics: dict) -> dict:
+    """Additive, contract-compatible Metrics fields (CONTRACT §4). Recomputed here (not
+    just in engine.metrics.compute_metrics) so AI/replan plans, whose Metrics dicts are
+    built inline by engine.optimizer/engine.replan, carry them too."""
+    loads_served = metrics.get("loads_served", 0)
+    trucks_used = metrics.get("trucks_used", 0)
+    metrics["co2_kg_per_load"] = round(metrics["co2_kg"] / loads_served, 1) if loads_served else 0.0
+    metrics["profit_per_truck_inr"] = round(metrics["profit_inr"] / trucks_used) if trucks_used else 0
+    return metrics
+
+
+def _enrich_plan_metrics(plan: dict) -> dict:
+    _with_derived_metrics(plan["metrics"])
+    for truck_plan in plan["trucks"]:
+        _with_derived_metrics(truck_plan["totals"])
+    return plan
+
+
 def _build_plan(mode: str) -> dict:
     scenario, matrix = STATE["scenario"], STATE["matrix"]
     if mode == "baseline":
@@ -105,7 +123,8 @@ def _build_plan(mode: str) -> dict:
         )
     else:
         raise HTTPException(status_code=400, detail=f"unknown mode {mode!r}")
-    return _fill_paths_and_compliance(plan)
+    _fill_paths_and_compliance(plan)
+    return _enrich_plan_metrics(plan)
 
 
 def _get_or_create_plan(mode: str) -> dict:
@@ -200,6 +219,8 @@ def get_compare():
         "profit_inr": ai_metrics["profit_inr"] - baseline_metrics["profit_inr"],
         "co2_kg": round(ai_metrics["co2_kg"] - baseline_metrics["co2_kg"], 1),
         "loads_served": ai_metrics["loads_served"] - baseline_metrics["loads_served"],
+        "co2_kg_per_load": round(ai_metrics["co2_kg_per_load"] - baseline_metrics["co2_kg_per_load"], 1),
+        "profit_per_truck_inr": ai_metrics["profit_per_truck_inr"] - baseline_metrics["profit_per_truck_inr"],
     }
     return {"baseline": baseline_metrics, "ai": ai_metrics, "delta": delta}
 
@@ -215,6 +236,7 @@ def post_replan(req: ReplanRequest):
         raise HTTPException(status_code=404, detail="plan not found")
     new_plan = replan(plan, req.event, STATE["scenario"], STATE["matrix"], CONFIG)
     _fill_paths_and_compliance(new_plan)
+    _enrich_plan_metrics(new_plan)
     STATE["plans"][new_plan["plan_id"]] = new_plan
     STATE["latest_by_mode"][new_plan["mode"]] = new_plan["plan_id"]
     return new_plan
@@ -240,7 +262,9 @@ def get_owner_summary(owner_id: str, plan_id: Optional[str] = None):
     plan = _resolve_plan(plan_id)
     truck_plans = [tp for tp in plan["trucks"] if tp["truck_id"] in owner["trucks"]]
     sub_plan = {"trucks": [dict(tp, totals={}) for tp in truck_plans], "metrics": {}}
-    metrics = compute_metrics(sub_plan, STATE["scenario"])
+    metrics = _with_derived_metrics(compute_metrics(sub_plan, STATE["scenario"]))
+    for truck_plan in sub_plan["trucks"]:
+        _with_derived_metrics(truck_plan["totals"])
     return {"owner": owner, "metrics": metrics, "trucks": sub_plan["trucks"]}
 
 

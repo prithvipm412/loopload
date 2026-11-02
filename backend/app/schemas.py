@@ -121,6 +121,8 @@ class Metrics(BaseModel):
     loads_total: int
     trucks_used: int
     idle_h: float
+    co2_kg_per_load: float
+    profit_per_truck_inr: int
 
 
 class TruckPlan(BaseModel):

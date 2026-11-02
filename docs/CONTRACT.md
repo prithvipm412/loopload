@@ -131,13 +131,16 @@ Driving-rest rule, used by both planners: `elapsed_h(drive_h) = drive_h + floor(
 ```json
 {"total_km":41230.5,"loaded_km":35110.0,"empty_km":6120.5,"empty_pct":14.8,
  "revenue_inr":1850000,"diesel_inr":927686,"toll_inr":206152,"profit_inr":716162,
- "co2_kg":27622.4,"loads_served":118,"loads_total":140,"trucks_used":20,"idle_h":312.0}
+ "co2_kg":27622.4,"loads_served":118,"loads_total":140,"trucks_used":20,"idle_h":312.0,
+ "co2_kg_per_load":234.1,"profit_per_truck_inr":35808}
 ```
+`co2_kg_per_load` is `co2_kg / loads_served` (0.0 if `loads_served` is 0) and `profit_per_truck_inr` is `profit_inr / trucks_used` (0 if `trucks_used` is 0). Additive fields, filled by CC for every Metrics object the API returns (plan-level and per-truck `totals`), including into `/api/compare`'s `delta`.
 
 ### Compare
 ```json
 {"baseline":{/*Metrics*/},"ai":{/*Metrics*/},
- "delta":{"empty_km":-9800.2,"empty_pct":-22.1,"profit_inr":412000,"co2_kg":-6580.0,"loads_served":31}}
+ "delta":{"empty_km":-9800.2,"empty_pct":-22.1,"profit_inr":412000,"co2_kg":-6580.0,"loads_served":31,
+          "co2_kg_per_load":-55.8,"profit_per_truck_inr":22640}}
 ```
 
 ### Forecast
