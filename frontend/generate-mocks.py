@@ -34,6 +34,27 @@ for mode in ['baseline','ai']:
  plans[mode]=dict(plan_id=f'{mode}-demo0042',mode=mode,created_at='2026-11-02T22:40:00+05:30',solve_time_s=8.2 if mode=='ai' else .2,trucks=tps,unassigned_loads=[l['id'] for l in loads if not any(l['id']==x['load_id'] for t in tps for x in t['legs'])],metrics=m)
 for p in plans.values():
  p['unassigned_loads']=[l['id'] for l in loads if not any(l['id']==x['load_id'] for t in p['trucks'] for x in t['legs'])]
+trucks[0]['type']='open_body'
+trucks[0]['capacity_t']=21
+for l in loads[:4]: l['truck_type']='open_body'
 scenario=dict(week_start='2026-11-09T00:00:00+05:30',cities=cities,owners=owners,trucks=trucks,loads=loads)
 for name,data in [('scenario',scenario),('plan_baseline',plans['baseline']),('plan_ai',plans['ai']),('compare',dict(baseline=plans['baseline']['metrics'],ai=plans['ai']['metrics'],delta={k:round(plans['ai']['metrics'][k]-plans['baseline']['metrics'][k],1) for k in ['empty_km','empty_pct','profit_inr','co2_kg','loads_served']}))]:
  (root/'src/mocks'/f'{name}.json').write_text(json.dumps(data,indent=2))
+# P1 fixtures remain deterministic and use the same metrics calculation as P0.
+import copy,datetime
+solo=copy.deepcopy(plans['ai']);solo['mode']='ai_solo';solo['plan_id']='ai-solo0042'
+for i,tp in enumerate(solo['trucks']):
+ for l in tp['legs']:
+  if i>0 and (l['seq']==3 or (i in [1,3,5] and l['seq']==1)):
+   l.update(kind='empty',load_id=None,revenue_inr=0,compliance=dict(ok=True,issues=[]))
+ tp['totals']=metrics(tp['legs'])
+solo['metrics']=metrics([l for t in solo['trucks'] for l in t['legs']]);solo['metrics']['trucks_used']=10;solo['metrics']['idle_h']=round(sum(t['totals']['idle_h'] for t in solo['trucks']),1)
+solo['unassigned_loads']=[l['id'] for l in loads if not any(l['id']==x['load_id'] for t in solo['trucks'] for x in t['legs'])]
+(root/'src/mocks/plan_solo.json').write_text(json.dumps(solo,indent=2))
+forecasts=[]
+for i,l in enumerate(loads[:8]):
+ history=[dict(week=(datetime.date(2026,8,17)+datetime.timedelta(weeks=j)).isoformat(),loads=round(12+i+math.sin(j)*3+j*.6)) for j in range(12)]
+ future=[dict(week=(datetime.date(2026,11,9)+datetime.timedelta(weeks=j)).isoformat(),loads=28-i+j*2,lower=23-i+j*2,upper=33-i+j*2) for j in range(4)]
+ origin,destination,commodity=('NSK','DEL','Onions') if i==0 else (l['origin'],l['destination'],l['commodity'])
+ forecasts.append(dict(lane=f'{origin}-{destination}',origin=origin,destination=destination,commodity=commodity,history=history,forecast=future,change_pct=31.5-i*2))
+(root/'src/mocks/forecast.json').write_text(json.dumps(forecasts,indent=2))

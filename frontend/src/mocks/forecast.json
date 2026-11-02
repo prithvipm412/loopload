@@ -1,0 +1,666 @@
+[
+  {
+    "lane": "NSK-DEL",
+    "origin": "NSK",
+    "destination": "DEL",
+    "commodity": "Onions",
+    "history": [
+      {
+        "week": "2026-08-17",
+        "loads": 12
+      },
+      {
+        "week": "2026-08-24",
+        "loads": 15
+      },
+      {
+        "week": "2026-08-31",
+        "loads": 16
+      },
+      {
+        "week": "2026-09-07",
+        "loads": 14
+      },
+      {
+        "week": "2026-09-14",
+        "loads": 12
+      },
+      {
+        "week": "2026-09-21",
+        "loads": 12
+      },
+      {
+        "week": "2026-09-28",
+        "loads": 15
+      },
+      {
+        "week": "2026-10-05",
+        "loads": 18
+      },
+      {
+        "week": "2026-10-12",
+        "loads": 20
+      },
+      {
+        "week": "2026-10-19",
+        "loads": 19
+      },
+      {
+        "week": "2026-10-26",
+        "loads": 16
+      },
+      {
+        "week": "2026-11-02",
+        "loads": 16
+      }
+    ],
+    "forecast": [
+      {
+        "week": "2026-11-09",
+        "loads": 28,
+        "lower": 23,
+        "upper": 33
+      },
+      {
+        "week": "2026-11-16",
+        "loads": 30,
+        "lower": 25,
+        "upper": 35
+      },
+      {
+        "week": "2026-11-23",
+        "loads": 32,
+        "lower": 27,
+        "upper": 37
+      },
+      {
+        "week": "2026-11-30",
+        "loads": 34,
+        "lower": 29,
+        "upper": 39
+      }
+    ],
+    "change_pct": 31.5
+  },
+  {
+    "lane": "DEL-JAI",
+    "origin": "DEL",
+    "destination": "JAI",
+    "commodity": "FMCG",
+    "history": [
+      {
+        "week": "2026-08-17",
+        "loads": 13
+      },
+      {
+        "week": "2026-08-24",
+        "loads": 16
+      },
+      {
+        "week": "2026-08-31",
+        "loads": 17
+      },
+      {
+        "week": "2026-09-07",
+        "loads": 15
+      },
+      {
+        "week": "2026-09-14",
+        "loads": 13
+      },
+      {
+        "week": "2026-09-21",
+        "loads": 13
+      },
+      {
+        "week": "2026-09-28",
+        "loads": 16
+      },
+      {
+        "week": "2026-10-05",
+        "loads": 19
+      },
+      {
+        "week": "2026-10-12",
+        "loads": 21
+      },
+      {
+        "week": "2026-10-19",
+        "loads": 20
+      },
+      {
+        "week": "2026-10-26",
+        "loads": 17
+      },
+      {
+        "week": "2026-11-02",
+        "loads": 17
+      }
+    ],
+    "forecast": [
+      {
+        "week": "2026-11-09",
+        "loads": 27,
+        "lower": 22,
+        "upper": 32
+      },
+      {
+        "week": "2026-11-16",
+        "loads": 29,
+        "lower": 24,
+        "upper": 34
+      },
+      {
+        "week": "2026-11-23",
+        "loads": 31,
+        "lower": 26,
+        "upper": 36
+      },
+      {
+        "week": "2026-11-30",
+        "loads": 33,
+        "lower": 28,
+        "upper": 38
+      }
+    ],
+    "change_pct": 29.5
+  },
+  {
+    "lane": "JAI-NAG",
+    "origin": "JAI",
+    "destination": "NAG",
+    "commodity": "Marble",
+    "history": [
+      {
+        "week": "2026-08-17",
+        "loads": 14
+      },
+      {
+        "week": "2026-08-24",
+        "loads": 17
+      },
+      {
+        "week": "2026-08-31",
+        "loads": 18
+      },
+      {
+        "week": "2026-09-07",
+        "loads": 16
+      },
+      {
+        "week": "2026-09-14",
+        "loads": 14
+      },
+      {
+        "week": "2026-09-21",
+        "loads": 14
+      },
+      {
+        "week": "2026-09-28",
+        "loads": 17
+      },
+      {
+        "week": "2026-10-05",
+        "loads": 20
+      },
+      {
+        "week": "2026-10-12",
+        "loads": 22
+      },
+      {
+        "week": "2026-10-19",
+        "loads": 21
+      },
+      {
+        "week": "2026-10-26",
+        "loads": 18
+      },
+      {
+        "week": "2026-11-02",
+        "loads": 18
+      }
+    ],
+    "forecast": [
+      {
+        "week": "2026-11-09",
+        "loads": 26,
+        "lower": 21,
+        "upper": 31
+      },
+      {
+        "week": "2026-11-16",
+        "loads": 28,
+        "lower": 23,
+        "upper": 33
+      },
+      {
+        "week": "2026-11-23",
+        "loads": 30,
+        "lower": 25,
+        "upper": 35
+      },
+      {
+        "week": "2026-11-30",
+        "loads": 32,
+        "lower": 27,
+        "upper": 37
+      }
+    ],
+    "change_pct": 27.5
+  },
+  {
+    "lane": "NAG-TPR",
+    "origin": "NAG",
+    "destination": "TPR",
+    "commodity": "Oranges",
+    "history": [
+      {
+        "week": "2026-08-17",
+        "loads": 15
+      },
+      {
+        "week": "2026-08-24",
+        "loads": 18
+      },
+      {
+        "week": "2026-08-31",
+        "loads": 19
+      },
+      {
+        "week": "2026-09-07",
+        "loads": 17
+      },
+      {
+        "week": "2026-09-14",
+        "loads": 15
+      },
+      {
+        "week": "2026-09-21",
+        "loads": 15
+      },
+      {
+        "week": "2026-09-28",
+        "loads": 18
+      },
+      {
+        "week": "2026-10-05",
+        "loads": 21
+      },
+      {
+        "week": "2026-10-12",
+        "loads": 23
+      },
+      {
+        "week": "2026-10-19",
+        "loads": 22
+      },
+      {
+        "week": "2026-10-26",
+        "loads": 19
+      },
+      {
+        "week": "2026-11-02",
+        "loads": 19
+      }
+    ],
+    "forecast": [
+      {
+        "week": "2026-11-09",
+        "loads": 25,
+        "lower": 20,
+        "upper": 30
+      },
+      {
+        "week": "2026-11-16",
+        "loads": 27,
+        "lower": 22,
+        "upper": 32
+      },
+      {
+        "week": "2026-11-23",
+        "loads": 29,
+        "lower": 24,
+        "upper": 34
+      },
+      {
+        "week": "2026-11-30",
+        "loads": 31,
+        "lower": 26,
+        "upper": 36
+      }
+    ],
+    "change_pct": 25.5
+  },
+  {
+    "lane": "BLR-HYD",
+    "origin": "BLR",
+    "destination": "HYD",
+    "commodity": "Textiles",
+    "history": [
+      {
+        "week": "2026-08-17",
+        "loads": 16
+      },
+      {
+        "week": "2026-08-24",
+        "loads": 19
+      },
+      {
+        "week": "2026-08-31",
+        "loads": 20
+      },
+      {
+        "week": "2026-09-07",
+        "loads": 18
+      },
+      {
+        "week": "2026-09-14",
+        "loads": 16
+      },
+      {
+        "week": "2026-09-21",
+        "loads": 16
+      },
+      {
+        "week": "2026-09-28",
+        "loads": 19
+      },
+      {
+        "week": "2026-10-05",
+        "loads": 22
+      },
+      {
+        "week": "2026-10-12",
+        "loads": 24
+      },
+      {
+        "week": "2026-10-19",
+        "loads": 23
+      },
+      {
+        "week": "2026-10-26",
+        "loads": 20
+      },
+      {
+        "week": "2026-11-02",
+        "loads": 20
+      }
+    ],
+    "forecast": [
+      {
+        "week": "2026-11-09",
+        "loads": 24,
+        "lower": 19,
+        "upper": 29
+      },
+      {
+        "week": "2026-11-16",
+        "loads": 26,
+        "lower": 21,
+        "upper": 31
+      },
+      {
+        "week": "2026-11-23",
+        "loads": 28,
+        "lower": 23,
+        "upper": 33
+      },
+      {
+        "week": "2026-11-30",
+        "loads": 30,
+        "lower": 25,
+        "upper": 35
+      }
+    ],
+    "change_pct": 23.5
+  },
+  {
+    "lane": "HYD-NAG",
+    "origin": "HYD",
+    "destination": "NAG",
+    "commodity": "FMCG",
+    "history": [
+      {
+        "week": "2026-08-17",
+        "loads": 17
+      },
+      {
+        "week": "2026-08-24",
+        "loads": 20
+      },
+      {
+        "week": "2026-08-31",
+        "loads": 21
+      },
+      {
+        "week": "2026-09-07",
+        "loads": 19
+      },
+      {
+        "week": "2026-09-14",
+        "loads": 17
+      },
+      {
+        "week": "2026-09-21",
+        "loads": 17
+      },
+      {
+        "week": "2026-09-28",
+        "loads": 20
+      },
+      {
+        "week": "2026-10-05",
+        "loads": 23
+      },
+      {
+        "week": "2026-10-12",
+        "loads": 25
+      },
+      {
+        "week": "2026-10-19",
+        "loads": 24
+      },
+      {
+        "week": "2026-10-26",
+        "loads": 21
+      },
+      {
+        "week": "2026-11-02",
+        "loads": 21
+      }
+    ],
+    "forecast": [
+      {
+        "week": "2026-11-09",
+        "loads": 23,
+        "lower": 18,
+        "upper": 28
+      },
+      {
+        "week": "2026-11-16",
+        "loads": 25,
+        "lower": 20,
+        "upper": 30
+      },
+      {
+        "week": "2026-11-23",
+        "loads": 27,
+        "lower": 22,
+        "upper": 32
+      },
+      {
+        "week": "2026-11-30",
+        "loads": 29,
+        "lower": 24,
+        "upper": 34
+      }
+    ],
+    "change_pct": 21.5
+  },
+  {
+    "lane": "NAG-CHE",
+    "origin": "NAG",
+    "destination": "CHE",
+    "commodity": "Marble",
+    "history": [
+      {
+        "week": "2026-08-17",
+        "loads": 18
+      },
+      {
+        "week": "2026-08-24",
+        "loads": 21
+      },
+      {
+        "week": "2026-08-31",
+        "loads": 22
+      },
+      {
+        "week": "2026-09-07",
+        "loads": 20
+      },
+      {
+        "week": "2026-09-14",
+        "loads": 18
+      },
+      {
+        "week": "2026-09-21",
+        "loads": 18
+      },
+      {
+        "week": "2026-09-28",
+        "loads": 21
+      },
+      {
+        "week": "2026-10-05",
+        "loads": 24
+      },
+      {
+        "week": "2026-10-12",
+        "loads": 26
+      },
+      {
+        "week": "2026-10-19",
+        "loads": 25
+      },
+      {
+        "week": "2026-10-26",
+        "loads": 22
+      },
+      {
+        "week": "2026-11-02",
+        "loads": 22
+      }
+    ],
+    "forecast": [
+      {
+        "week": "2026-11-09",
+        "loads": 22,
+        "lower": 17,
+        "upper": 27
+      },
+      {
+        "week": "2026-11-16",
+        "loads": 24,
+        "lower": 19,
+        "upper": 29
+      },
+      {
+        "week": "2026-11-23",
+        "loads": 26,
+        "lower": 21,
+        "upper": 31
+      },
+      {
+        "week": "2026-11-30",
+        "loads": 28,
+        "lower": 23,
+        "upper": 33
+      }
+    ],
+    "change_pct": 19.5
+  },
+  {
+    "lane": "CHE-BLR",
+    "origin": "CHE",
+    "destination": "BLR",
+    "commodity": "Oranges",
+    "history": [
+      {
+        "week": "2026-08-17",
+        "loads": 19
+      },
+      {
+        "week": "2026-08-24",
+        "loads": 22
+      },
+      {
+        "week": "2026-08-31",
+        "loads": 23
+      },
+      {
+        "week": "2026-09-07",
+        "loads": 21
+      },
+      {
+        "week": "2026-09-14",
+        "loads": 19
+      },
+      {
+        "week": "2026-09-21",
+        "loads": 19
+      },
+      {
+        "week": "2026-09-28",
+        "loads": 22
+      },
+      {
+        "week": "2026-10-05",
+        "loads": 25
+      },
+      {
+        "week": "2026-10-12",
+        "loads": 27
+      },
+      {
+        "week": "2026-10-19",
+        "loads": 26
+      },
+      {
+        "week": "2026-10-26",
+        "loads": 23
+      },
+      {
+        "week": "2026-11-02",
+        "loads": 23
+      }
+    ],
+    "forecast": [
+      {
+        "week": "2026-11-09",
+        "loads": 21,
+        "lower": 16,
+        "upper": 26
+      },
+      {
+        "week": "2026-11-16",
+        "loads": 23,
+        "lower": 18,
+        "upper": 28
+      },
+      {
+        "week": "2026-11-23",
+        "loads": 25,
+        "lower": 20,
+        "upper": 30
+      },
+      {
+        "week": "2026-11-30",
+        "loads": 27,
+        "lower": 22,
+        "upper": 32
+      }
+    ],
+    "change_pct": 17.5
+  }
+]
