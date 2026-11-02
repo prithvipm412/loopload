@@ -133,8 +133,8 @@ def _chain_seed(scenario, matrix, config):
 def _routing(scenario, matrix, config, seconds, widen=False):
     routing_started = time.monotonic()
     trucks, loads = scenario['trucks'], scenario['loads']
-    if not trucks:
-        return []
+    if not trucks or not loads:
+        return [dict(truck_id=t['id'], legs=[]) for t in trucks]
     cities = {c: i for i, c in enumerate(matrix['cities'])}
     # Node metadata: city, service minutes, load index, pickup flag.
     service = math.ceil(config['load_unload_h']*60)
@@ -210,7 +210,6 @@ def _routing(scenario, matrix, config, seconds, widen=False):
         routing.AddPickupAndDelivery(p, d)
         solver.Add(routing.VehicleVar(p) == routing.VehicleVar(d))
         solver.Add(routing.ActiveVar(p) == routing.ActiveVar(d))
-        # FTL implies the next visited stop after pickup is its own delivery.
         # Capacity one enforces delivery before any further pickup.
         solver.Add(dimension.CumulVar(p) <= dimension.CumulVar(d))
         penalty = round(load['freight_inr'] * load.get('probability', 1))
@@ -304,7 +303,12 @@ def _greedy(scenario, matrix, config):
 
 def plan_optimized(scenario: dict, matrix: dict, config: dict, pooled: bool = True,
                    time_limit_s: int | None = None) -> dict:
-    """Plan compatible FTL chains; solo owners claim loads in scenario owner order."""
+    """Maximize profit within the demo's >=50% empty-km reduction target.
+
+    The default empty-distance allowance is 49% of baseline empty km. Override
+    ``optimizer_empty_km_budget`` with a kilometre value, or None to disable it.
+    Solo owners claim loads in scenario order and share the allowance by fleet size.
+    """
     started = time.monotonic()
     scenario = deepcopy(scenario)
     config = dict(config)
@@ -315,7 +319,7 @@ def plan_optimized(scenario: dict, matrix: dict, config: dict, pooled: bool = Tr
         baseline = plan_baseline(scenario, matrix, config)
         config['optimizer_empty_km_budget'] = baseline['metrics']['empty_km']*.49
     seconds = time_limit_s if time_limit_s is not None else config['solver_time_limit_s']
-    deadline = started + max(.001, seconds) - .03
+    deadline = started + max(.001, seconds) - .10
     fallback = False
     def solve(part, budget, solve_config=None):
         solve_config = config if solve_config is None else solve_config
