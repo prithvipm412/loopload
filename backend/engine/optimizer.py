@@ -6,6 +6,7 @@ import time
 from uuid import uuid4
 
 from ortools.constraint_solver import pywrapcp, routing_enums_pb2
+from ortools.sat.python import cp_model
 
 
 def _elapsed(drive, config):
@@ -32,15 +33,17 @@ def _metrics(legs, loads_total, trucks, config):
     revenue = sum(l['revenue_inr'] for l in legs)
     diesel = sum(l['diesel_inr'] for l in legs)
     toll = sum(l['toll_inr'] for l in legs)
-    # Idle time includes service, waiting and unused time across the entire horizon.
-    busy = sum(l['arrive_h'] - l['depart_h'] for l in legs)
+    idle = 0.0
+    for truck in trucks:
+        route = sorted((l for l in legs if l['truck_id'] == truck['id']), key=lambda l: l['seq'])
+        idle += sum(max(0, b['depart_h']-a['arrive_h']) for a,b in zip(route,route[1:]))
     return dict(total_km=round(total, 1), loaded_km=round(loaded, 1),
                 empty_km=round(total-loaded, 1), empty_pct=round(100*(total-loaded)/total, 1) if total else 0.0,
                 revenue_inr=revenue, diesel_inr=diesel, toll_inr=toll, profit_inr=revenue-diesel-toll,
                 co2_kg=round(sum(l['co2_kg'] for l in legs), 1),
                 loads_served=len({l['load_id'] for l in legs if l['load_id']}), loads_total=loads_total,
                 trucks_used=len({l['truck_id'] for l in legs}),
-                idle_h=round(max(0, sum(max(0, config['horizon_h']-t['available_from_h']) for t in trucks)-busy), 1))
+                idle_h=round(idle, 1))
 
 
 def _finish(routes, scenario, config, started, mode='ai', solver=None):
@@ -58,7 +61,77 @@ def _finish(routes, scenario, config, started, mode='ai', solver=None):
     return plan
 
 
+def _chain_seed(scenario, matrix, config):
+    """Build a small pool of promising chains to warm-start the routing search."""
+    cities = {c:i for i,c in enumerate(matrix['cities'])}
+    distance = matrix['distance_km']
+    travel = [[math.ceil(_elapsed(d,config)*60)/60 for d in row] for row in matrix['duration_h']]
+    cost = config['diesel_inr_per_l']/config['mileage_kmpl']+config['toll_inr_per_km']
+    service = math.ceil(config['load_unload_h']*60)/60
+    loads = scenario['loads']
+    candidates = []
+    for v, truck in enumerate(scenario['trucks']):
+        compatible = [(i,l,cities[l['origin']],cities[l['destination']]) for i,l in enumerate(loads)
+                      if l['truck_type']==truck['type'] and l['weight_t']<=truck['capacity_t']]
+        beam = [(0, 0, truck['available_from_h'], cities[truck['start_city']], ())]
+        seen = {}
+        for depth in range(6):
+            expanded = []
+            for profit, empty, now, city, path in beam:
+                for i, load, origin, destination in compatible:
+                    if i in path or distance[city][origin] > config.get('optimizer_seed_radius_km', 500):
+                        continue
+                    pickup = max(now+travel[city][origin], math.ceil(load['pickup_start_h']*60)/60)
+                    arrival = pickup+service+travel[origin][destination]
+                    finish = arrival+service
+                    if pickup > load['pickup_end_h'] or arrival > load['deliver_by_h'] or finish > config['horizon_h']:
+                        continue
+                    gain = load['freight_inr']-round(distance[city][origin]*cost)-round(distance[origin][destination]*cost)
+                    next_path = path+(i,)
+                    state = (profit+gain, empty+distance[city][origin], finish, destination, next_path)
+                    key = (destination, frozenset(next_path))
+                    if key not in seen or finish < seen[key][2]:
+                        seen[key] = state
+                        expanded.append(state)
+            if not expanded:
+                break
+            # Keep both high-profit chains and fast chains with room for a next load.
+            best_profit = sorted(expanded,key=lambda x:(-x[0],x[1],x[2]))[:12]
+            best_rate = sorted(expanded,key=lambda x:(-x[0]/max(1,x[2]-truck['available_from_h']),x[1]))[:12]
+            beam = list({x[4]:x for x in best_profit+best_rate}.values())
+        for state in sorted(seen.values(),key=lambda x:(-x[0],x[1]))[:40]:
+            if state[0]>0:
+                candidates.append((v,state))
+    if not candidates:
+        return [[] for _ in scenario['trucks']]
+    model = cp_model.CpModel()
+    choices = [model.NewBoolVar(f'chain_{i}') for i in range(len(candidates))]
+    per_vehicle, per_load = {}, {}
+    for choice,(v,state) in zip(choices,candidates):
+        per_vehicle.setdefault(v,[]).append(choice)
+        for i in state[4]:
+            per_load.setdefault(i,[]).append(choice)
+    for group in list(per_vehicle.values())+list(per_load.values()):
+        model.AddAtMostOne(group)
+    if config.get('optimizer_empty_km_budget') is not None:
+        model.Add(sum(math.ceil(state[1]*1000)*choice for choice,(_,state) in zip(choices,candidates))
+                  <= math.floor(config['optimizer_empty_km_budget']*1000))
+    model.Maximize(sum(round(state[0])*choice for choice,(_,state) in zip(choices,candidates)))
+    solver = cp_model.CpSolver()
+    solver.parameters.max_time_in_seconds = .4
+    solver.parameters.num_search_workers = 1
+    solver.parameters.random_seed = 42
+    status = solver.Solve(model)
+    result = [[] for _ in scenario['trucks']]
+    if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        for choice,(v,state) in zip(choices,candidates):
+            if solver.Value(choice):
+                result[v] = list(state[4])
+    return result
+
+
 def _routing(scenario, matrix, config, seconds, widen=False):
+    routing_started = time.monotonic()
     trucks, loads = scenario['trucks'], scenario['loads']
     if not trucks:
         return []
@@ -75,25 +148,43 @@ def _routing(scenario, matrix, config, seconds, widen=False):
     horizon = math.floor(config['horizon_h']*60)
     cost_per_km = config['diesel_inr_per_l']/config['mileage_kmpl'] + config['toll_inr_per_km']
     distances, durations = matrix['distance_km'], matrix['duration_h']
-    def distance(a, b):
-        return distances[cities[nodes[a][0]]][cities[nodes[b][0]]]
-    def cost(a, b):
-        a, b = manager.IndexToNode(a), manager.IndexToNode(b)
-        return 0 if a == end or b == end else round(distance(a, b)*cost_per_km)
-    def transit(a, b):
-        a, b = manager.IndexToNode(a), manager.IndexToNode(b)
-        if a == end or b == end:
-            return nodes[a][1]
-        drive = durations[cities[nodes[a][0]]][cities[nodes[b][0]]]
-        return math.ceil(_elapsed(drive, config)*60) + nodes[a][1]
-    routing.SetArcCostEvaluatorOfAllVehicles(routing.RegisterTransitCallback(cost))
-    routing.AddDimension(routing.RegisterTransitCallback(transit), horizon, horizon, False, 'Time')
+    # Native matrix evaluators avoid Python callbacks in the local-search hot loop.
+    node_cities = [cities[n[0]] if n[0] is not None else None for n in nodes]
+    costs, times = [], []
+    for a, ca in enumerate(node_cities):
+        costs.append([0 if ca is None or cb is None else round(distances[ca][cb]*cost_per_km)
+                      for cb in node_cities])
+        times.append([nodes[a][1] + (0 if ca is None or cb is None else
+                      math.ceil(_elapsed(durations[ca][cb], config)*60)) for cb in node_cities])
+    nudge = config.get('optimizer_home_nudge', 0.0)
+    if nudge:
+        for vehicle, truck in enumerate(trucks):
+            home = cities[truck['home_city']]
+            vehicle_costs = [row[:] for row in costs]
+            for a, ca in enumerate(node_cities[:-1]):
+                vehicle_costs[a][end] = round(distances[ca][home]*cost_per_km*nudge)
+            routing.SetArcCostEvaluatorOfVehicle(routing.RegisterTransitMatrix(vehicle_costs), vehicle)
+    else:
+        routing.SetArcCostEvaluatorOfAllVehicles(routing.RegisterTransitMatrix(costs))
+    routing.AddDimension(routing.RegisterTransitMatrix(times), horizon, horizon, False, 'Time')
     dimension = routing.GetDimensionOrDie('Time')
     def demand(index):
         node = nodes[manager.IndexToNode(index)]
         return 0 if node[2] is None else (1 if node[3] else -1)
     routing.AddDimensionWithVehicleCapacity(routing.RegisterUnaryTransitCallback(demand), 0, [1]*len(trucks), True, 'Capacity')
     solver = routing.solver()
+    if config.get('optimizer_empty_km_budget') is not None:
+        # Only pickup -> its delivery carries freight; all other city moves are empty.
+        empty_costs = []
+        for a, ca in enumerate(node_cities):
+            empty_costs.append([0 if ca is None or cb is None or
+                               (nodes[a][3] and nodes[a][2] == nodes[b][2])
+                               else math.ceil(distances[ca][cb]*1000)
+                               for b, cb in enumerate(node_cities)])
+        budget = max(0, math.floor(config['optimizer_empty_km_budget']*1000))
+        routing.AddDimension(routing.RegisterTransitMatrix(empty_costs), 0, budget, True, 'EmptyKm')
+        empty_dimension = routing.GetDimensionOrDie('EmptyKm')
+        solver.Add(sum(empty_dimension.CumulVar(routing.End(v)) for v in range(len(trucks))) <= budget)
     for v, truck in enumerate(trucks):
         available = math.ceil(truck['available_from_h']*60)
         if available > horizon:
@@ -119,15 +210,24 @@ def _routing(scenario, matrix, config, seconds, widen=False):
         routing.AddPickupAndDelivery(p, d)
         solver.Add(routing.VehicleVar(p) == routing.VehicleVar(d))
         solver.Add(routing.ActiveVar(p) == routing.ActiveVar(d))
+        # FTL implies the next visited stop after pickup is its own delivery.
+        # Capacity one enforces delivery before any further pickup.
         solver.Add(dimension.CumulVar(p) <= dimension.CumulVar(d))
         penalty = round(load['freight_inr'] * load.get('probability', 1))
-        routing.AddDisjunction([p], penalty)
-        routing.AddDisjunction([d], 0)
+        routing.AddDisjunction([p], (penalty+1)//2)
+        routing.AddDisjunction([d], penalty//2)
     params = pywrapcp.DefaultRoutingSearchParameters()
-    params.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+    params.first_solution_strategy = getattr(routing_enums_pb2.FirstSolutionStrategy,
+        config.get('optimizer_first_solution', 'PATH_CHEAPEST_ARC'))
     params.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
-    params.time_limit.FromMilliseconds(max(1, round(seconds*1000)))
-    solution = routing.SolveWithParameters(params)
+    params.log_search = config.get('optimizer_log_search', False)
+    seed = _chain_seed(scenario, matrix, config)
+    node_routes = [[len(trucks)+2*i+j for i in route for j in (0,1)] for route in seed]
+    params.time_limit.FromMilliseconds(max(1, int((seconds-(time.monotonic()-routing_started)-.02)*1000)))
+    routing.CloseModelWithParameters(params)
+    initial = routing.ReadAssignmentFromRoutes(node_routes, True)
+    solution = (routing.SolveFromAssignmentWithParameters(initial, params) if initial is not None
+                else routing.SolveWithParameters(params))
     if solution is None:
         return None
     routes = []
@@ -166,6 +266,7 @@ def _greedy(scenario, matrix, config):
     lookup = {city: i for i,city in enumerate(matrix['cities'])}
     cost = config['diesel_inr_per_l']/config['mileage_kmpl']+config['toll_inr_per_km']
     routes = []
+    empty_left = config.get('optimizer_empty_km_budget')
     def travel(a,b):
         return _elapsed(matrix['duration_h'][lookup[a]][lookup[b]], config)
     for truck in scenario['trucks']:
@@ -180,6 +281,8 @@ def _greedy(scenario, matrix, config):
                 arrive = depart+travel(load['origin'],load['destination'])
                 finish = arrive+config['load_unload_h']
                 km = matrix['distance_km'][lookup[city]][lookup[load['origin']]]
+                if empty_left is not None and km > empty_left+1e-9:
+                    continue
                 if pickup <= load['pickup_end_h'] and arrive <= load['deliver_by_h'] and finish <= config['horizon_h']:
                     score = load['freight_inr']*load.get('probability',1)-km*cost
                     loaded_km = matrix['distance_km'][lookup[load['origin']]][lookup[load['destination']]]
@@ -188,6 +291,8 @@ def _greedy(scenario, matrix, config):
             if not candidates:
                 break
             _, _, load, pickup, depart, arrive, finish = max(candidates, key=lambda c:(c[0], c[1]))
+            if empty_left is not None:
+                empty_left -= matrix['distance_km'][lookup[city]][lookup[load['origin']]]
             if city != load['origin']:
                 legs.append(_leg(truck,len(legs),city,load['origin'],now,pickup,matrix,config))
             legs.append(_leg(truck,len(legs),load['origin'],load['destination'],depart,arrive,matrix,config,load))
@@ -202,19 +307,36 @@ def plan_optimized(scenario: dict, matrix: dict, config: dict, pooled: bool = Tr
     """Plan compatible FTL chains; solo owners claim loads in scenario owner order."""
     started = time.monotonic()
     scenario = deepcopy(scenario)
+    config = dict(config)
+    if 'optimizer_empty_km_budget' not in config:
+        # The demo's stated goal is >=50% fewer empty km than today's dispatch.
+        # Keep the rupee objective intact, subject to that fleet-wide constraint.
+        from engine.baseline import plan_baseline
+        baseline = plan_baseline(scenario, matrix, config)
+        config['optimizer_empty_km_budget'] = baseline['metrics']['empty_km']*.49
     seconds = time_limit_s if time_limit_s is not None else config['solver_time_limit_s']
+    deadline = started + max(.001, seconds) - .03
     fallback = False
-    def solve(part, budget):
+    def solve(part, budget, solve_config=None):
+        solve_config = config if solve_config is None else solve_config
         nonlocal fallback
-        routes = _routing(part,matrix,config,budget)
+        inactive = [t for t in part['trucks'] if t['available_from_h'] >= config['horizon_h']]
+        if inactive:
+            active_ids = {t['id'] for t in inactive}
+            active = dict(part, trucks=[t for t in part['trucks'] if t['id'] not in active_ids])
+        else:
+            active = part
+        remaining_time = lambda: max(.001, min(budget, deadline-time.monotonic()))
+        routes = _routing(active,matrix,solve_config,remaining_time())
         if routes is None:
-            routes = _routing(part,matrix,config,budget,True)
-            if routes is not None and not _valid(routes,part,config):
+            routes = _routing(active,matrix,solve_config,remaining_time(),True)
+            if routes is not None and not _valid(routes,part,solve_config):
                 routes = None
         if routes is None:
             fallback = True
-            routes = _greedy(part,matrix,config)
-        return routes
+            routes = _greedy(active,matrix,solve_config)
+        by_id = {r['truck_id']: r for r in routes}
+        return [by_id.get(t['id'],dict(truck_id=t['id'],legs=[])) for t in part['trucks']]
     if pooled:
         routes = solve(scenario,seconds)
     else:
@@ -225,7 +347,10 @@ def plan_optimized(scenario: dict, matrix: dict, config: dict, pooled: bool = Tr
             if not trucks:
                 continue
             part = dict(scenario,trucks=trucks,loads=remaining)
-            result = solve(part,seconds/max(1,len(owner_ids)))
+            owner_config = dict(config)
+            if config.get('optimizer_empty_km_budget') is not None:
+                owner_config['optimizer_empty_km_budget'] *= len(trucks)/max(1,len(scenario['trucks']))
+            result = solve(part,seconds/max(1,len(owner_ids)),owner_config)
             routes.extend(result)
             served = {l['load_id'] for r in result for l in r['legs'] if l['load_id']}
             remaining = [l for l in remaining if l['id'] not in served]
