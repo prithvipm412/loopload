@@ -843,7 +843,7 @@ function TruckDrawer({
                   width: `${(Math.max(0, Math.min(168, l.arrive_h) - l.depart_h) / 168) * 100}%`,
                 }}
               >
-                {l.to}
+                {l.arrive_h - l.depart_h >= 8 ? l.to : ""}
               </div>
             ))}
           </div>
@@ -1046,7 +1046,7 @@ function ForecastPage({ scenario, ai }: Data) {
   const f = history;
   const series = f
     ? [
-        ...f.history.map((x) => ({ week: x.week, actual: x.loads })),
+        ...f.history.slice(-16).map((x) => ({ week: x.week, actual: x.loads })),
         ...(f.history.length
           ? [
               {
@@ -1101,7 +1101,9 @@ function ForecastPage({ scenario, ai }: Data) {
                   <strong>{num(l.forecast[0]?.loads || 0, 1)}</strong>
                   <small>loads next week</small>
                 </span>
-                <span className="lane-change">
+                <span
+                  className={`lane-change ${l.change_pct < 0 ? "negative" : ""}`}
+                >
                   {l.change_pct > 0 ? "+" : ""}
                   {num(l.change_pct, 1)}%
                 </span>
@@ -1130,7 +1132,7 @@ function ForecastPage({ scenario, ai }: Data) {
               </div>
               <span className="map-pill">{f?.commodity}</span>
             </div>
-            <p>Weekly loads · historical demand and four-week forecast</p>
+            <p>Weekly loads · last 16 weeks and four-week forecast</p>
             <ResponsiveContainer width="100%" height={250}>
               <ComposedChart
                 data={series}
@@ -1179,7 +1181,7 @@ function ForecastPage({ scenario, ai }: Data) {
                 <Line
                   name="History"
                   dataKey="actual"
-                  stroke="#9CCBE8"
+                  stroke="#5F91AF"
                   strokeWidth={2.5}
                   dot={false}
                   connectNulls
@@ -1187,13 +1189,18 @@ function ForecastPage({ scenario, ai }: Data) {
                 <Line
                   name="Forecast"
                   dataKey="predicted"
-                  stroke="#A99BE0"
+                  stroke="#8B78C3"
                   strokeWidth={2.5}
                   strokeDasharray="5 4"
                   dot={{ r: 3 }}
                   connectNulls
                 />
-                <Legend wrapperStyle={{ fontSize: 10 }} />
+                <Legend
+                  wrapperStyle={{ fontSize: 11 }}
+                  formatter={(value) => (
+                    <span style={{ color: "#7A7064" }}>{value}</span>
+                  )}
+                />
               </ComposedChart>
             </ResponsiveContainer>
           </section>

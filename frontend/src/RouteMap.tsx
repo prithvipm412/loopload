@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DeckGL from "@deck.gl/react";
 import {
   PathLayer,
@@ -8,10 +8,17 @@ import {
 } from "@deck.gl/layers";
 import { TripsLayer } from "@deck.gl/geo-layers";
 import type { PathStyleExtensionProps } from "@deck.gl/extensions";
-import { PathStyleExtension } from "@deck.gl/extensions";
+import {
+  CollisionFilterExtension,
+  PathStyleExtension,
+} from "@deck.gl/extensions";
 import { Map } from "react-map-gl/maplibre";
-import type { PickingInfo } from "@deck.gl/core";
-import type { Scenario, Plan, Leg, Forecast } from "./types";
+import {
+  WebMercatorViewport,
+  type MapViewState,
+  type PickingInfo,
+} from "@deck.gl/core";
+import type { Scenario, Plan, Leg, Forecast, City } from "./types";
 import { money, num } from "./format";
 import "maplibre-gl/dist/maplibre-gl.css";
 interface Props {
@@ -40,6 +47,77 @@ export default function RouteMap({
 }: Props) {
   const [hover, setHover] = useState<PickingInfo<Leg> | null>(null);
   const [mapFailed, setMapFailed] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
+  const mapRoot = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ width: 800, height: 360 });
+  const [viewState, setViewState] = useState<MapViewState>({
+    longitude: 79,
+    latitude: mini ? 19 : 20,
+    zoom: mini ? 2 : hot ? 3 : 3.3,
+    pitch: 0,
+    bearing: 0,
+  });
+  useEffect(() => {
+    const observer = new ResizeObserver(([entry]) =>
+      setSize({
+        width: entry.contentRect.width,
+        height: entry.contentRect.height,
+      }),
+    );
+    if (mapRoot.current) observer.observe(mapRoot.current);
+    return () => observer.disconnect();
+  }, []);
+  // Cull only overlapping labels in screen space; keep every city dot available.
+  // This also works with software WebGL and does not alter basemap rendering.
+  const labelCities = useMemo(() => {
+    const viewport = new WebMercatorViewport({ ...viewState, ...size });
+    const occupied: {
+      left: number;
+      right: number;
+      top: number;
+      bottom: number;
+    }[] = [];
+    const priority = (c: City) =>
+      ["TPR", "DEL", "JAI", "NAG"].includes(c.id) ? 100 : 0;
+    const candidates = scenario.cities.filter(
+      (c) =>
+        !mini ||
+        plan.trucks.some((t) =>
+          t.legs.some((l) => l.from === c.id || l.to === c.id),
+        ),
+    );
+    return [...candidates]
+      .sort((a, b) => priority(b) - priority(a))
+      .filter((c) => {
+        const [x, y] = viewport.project([c.lon, c.lat]);
+        const width = c.name.length * (mini ? 6.5 : 7.5) + 8;
+        const box = {
+          left: x - width / 2,
+          right: x + width / 2,
+          top: y + 3,
+          bottom: y + (mini ? 20 : 23),
+        };
+        if (
+          box.left < 4 ||
+          box.right > size.width - 4 ||
+          box.top < 4 ||
+          box.bottom > size.height - 4
+        )
+          return false;
+        if (
+          occupied.some(
+            (b) =>
+              box.left < b.right &&
+              box.right > b.left &&
+              box.top < b.bottom &&
+              box.bottom > b.top,
+          )
+        )
+          return false;
+        occupied.push(box);
+        return true;
+      });
+  }, [scenario, plan, mini, viewState, size]);
   const city = (id: string) => scenario.cities.find((c) => c.id === id)!;
   const layers = useMemo(() => {
     const routeLayers = (p: Plan, opacity: number, suffix: string) =>
@@ -115,56 +193,6 @@ export default function RouteMap({
         currentTime: time,
         opacity: 0.95,
       }),
-      new ScatterplotLayer({
-        id: "cities",
-        data: mini
-          ? scenario.cities.filter((c) =>
-              plan.trucks.some((t) =>
-                t.legs.some((l) => l.from === c.id || l.to === c.id),
-              ),
-            )
-          : scenario.cities,
-        getPosition: (c) => [c.lon, c.lat],
-        getRadius: mini ? 3 : 4,
-        radiusUnits: "pixels",
-        getFillColor: [250, 247, 242],
-        getLineColor: [122, 112, 100],
-        stroked: true,
-        lineWidthMinPixels: 1.5,
-        pickable: true,
-      }),
-      new TextLayer({
-        id: "labels",
-        data: mini
-          ? scenario.cities.filter((c) =>
-              plan.trucks.some((t) =>
-                t.legs.some((l) => l.from === c.id || l.to === c.id),
-              ),
-            )
-          : scenario.cities,
-        getPosition: (c) => [c.lon, c.lat],
-        getText: (c) => c.name,
-        getSize: mini ? 10 : 11,
-        getColor: [74, 66, 56],
-        getPixelOffset: [0, 12],
-        fontFamily: "Inter, sans-serif",
-        getTextAnchor: "middle",
-        outlineWidth: 3,
-        outlineColor: [250, 247, 242, 230],
-      }),
-      new ScatterplotLayer({
-        id: "trucks",
-        data: positions,
-        getPosition: (d) => d.position,
-        getRadius: 7,
-        radiusUnits: "pixels",
-        getFillColor: [169, 155, 224],
-        stroked: true,
-        getLineColor: [255, 253, 249],
-        lineWidthMinPixels: 2,
-        pickable: true,
-        onClick: (info) => info.object && onSelect(info.object.truck_id),
-      }),
       ...(hot
         ? [
             new ArcLayer<Forecast>({
@@ -185,6 +213,53 @@ export default function RouteMap({
             }),
           ]
         : []),
+      new ScatterplotLayer({
+        id: "cities",
+        data: mini
+          ? scenario.cities.filter((c) =>
+              plan.trucks.some((t) =>
+                t.legs.some((l) => l.from === c.id || l.to === c.id),
+              ),
+            )
+          : scenario.cities,
+        getPosition: (c) => [c.lon, c.lat],
+        getRadius: mini ? 3 : 4,
+        radiusUnits: "pixels",
+        getFillColor: [250, 247, 242],
+        getLineColor: [122, 112, 100],
+        stroked: true,
+        lineWidthMinPixels: 1.5,
+        pickable: true,
+      }),
+      new TextLayer<City>({
+        id: "labels",
+        data: labelCities,
+        getPosition: (c) => [c.lon, c.lat],
+        getText: (c) => c.name,
+        getSize: mini ? 10 : 12,
+        characterSet: "auto",
+        fontSettings: { sdf: true },
+        getColor: [74, 66, 56],
+        getPixelOffset: [0, 11],
+        fontWeight: 500,
+        fontFamily: "Inter, sans-serif",
+        getTextAnchor: "middle",
+        outlineWidth: 1,
+        outlineColor: [250, 247, 242, 230],
+      }),
+      new ScatterplotLayer({
+        id: "trucks",
+        data: positions,
+        getPosition: (d) => d.position,
+        getRadius: 7,
+        radiusUnits: "pixels",
+        getFillColor: [169, 155, 224],
+        stroked: true,
+        getLineColor: [255, 253, 249],
+        lineWidthMinPixels: 2,
+        pickable: true,
+        onClick: (info) => info.object && onSelect(info.object.truck_id),
+      }),
     ];
   }, [
     scenario,
@@ -197,17 +272,22 @@ export default function RouteMap({
     hover?.object,
     hot,
     mini,
+    labelCities,
   ]);
   return (
-    <div data-testid="map-canvas" className="map-canvas">
+    <div
+      ref={mapRoot}
+      data-testid="map-canvas"
+      data-basemap-status={
+        mapFailed ? "unavailable" : mapReady ? "ready" : "loading"
+      }
+      className="map-canvas"
+    >
       <DeckGL
-        initialViewState={{
-          longitude: 79,
-          latitude: 21,
-          zoom: mini ? 2.1 : 3.4,
-          pitch: 0,
-          bearing: 0,
-        }}
+        viewState={viewState}
+        onViewStateChange={({ viewState }) =>
+          setViewState(viewState as MapViewState)
+        }
         controller
         layers={layers}
         getCursor={({ isHovering }) => (isHovering ? "pointer" : "grab")}
@@ -216,13 +296,17 @@ export default function RouteMap({
           mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
           attributionControl={false}
           onLoad={(e) => {
-            if (mini) {
+            {
               for (const layer of e.target.getStyle().layers || []) {
-                if (layer.type === "symbol")
+                if (
+                  layer.type === "symbol" &&
+                  (mini || !layer.id.includes("country"))
+                )
                   e.target.setLayoutProperty(layer.id, "visibility", "none");
               }
             }
           }}
+          onIdle={() => setMapReady(true)}
           onError={() => setMapFailed(true)}
         />
       </DeckGL>

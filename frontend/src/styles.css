@@ -1578,3 +1578,190 @@ select {
   border-radius: 4px;
   padding: 3px 4px;
 }
+/* Projector QA: keep useful controls and complete forecast lanes in one view. */
+.delta {
+  color: #7a7064;
+}
+.delta.good,
+.compliance.ok {
+  color: #38694c;
+}
+.delta.bad {
+  color: #994d43;
+}
+.compliance.warning {
+  color: #765b22;
+}
+.lane-change {
+  color: #38694c;
+}
+.metric > strong,
+.pool-stat strong,
+.timeline-top strong {
+  font-variant-numeric: tabular-nums;
+}
+.gantt > div {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.leg-title h3 {
+  font-size: 13px;
+}
+.leg-card > p,
+.leg-times {
+  font-size: 11px;
+}
+.leg-money strong {
+  font-size: 12px;
+}
+.map-legend {
+  font-size: 10px;
+}
+@media (min-width: 1101px) {
+  header {
+    height: 64px;
+  }
+  main {
+    padding-top: 16px;
+  }
+  .page-heading {
+    margin-bottom: 12px;
+  }
+  .page-heading h1 {
+    font-size: 26px;
+    margin: 5px 0;
+  }
+  .segmented button {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .primary {
+    min-height: 40px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .map-panel {
+    height: 360px;
+  }
+  .timeline {
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+  .timeline input {
+    margin-top: 10px;
+    margin-bottom: 9px;
+  }
+  .impact-panel {
+    padding: 16px;
+  }
+  .metric-grid {
+    margin-top: 12px;
+    grid-auto-rows: 72px;
+  }
+  .metric {
+    margin-bottom: 0;
+    padding-bottom: 8px;
+  }
+  .metric-label {
+    font-size: 10px;
+    line-height: 1.3;
+  }
+  .metric > strong {
+    font-size: 24px;
+    line-height: 1.1;
+    margin: 5px 0;
+  }
+  .metric .delta {
+    font-size: 9px;
+    line-height: 1.3;
+  }
+  .comparison {
+    margin-top: 10px;
+  }
+  .comparison .recharts-responsive-container {
+    height: 95px !important;
+  }
+  .truck-list-heading {
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+  .truck-list {
+    max-height: 76px;
+  }
+  .truck-row {
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+  .pooling {
+    margin-top: 12px;
+    padding: 13px 20px;
+  }
+  .pooling-heading .eyebrow {
+    font-size: 9px;
+  }
+  .pooling-heading h3 {
+    margin-top: 3px;
+  }
+  .pooling-heading p {
+    margin-top: 2px;
+  }
+  .forecast-grid {
+    gap: 20px;
+  }
+  .hot-lanes {
+    padding: 20px;
+  }
+  .lane-row {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    min-height: 60px;
+  }
+  .forecast-note {
+    padding-top: 14px;
+    line-height: 1.5;
+  }
+  .forecast-chart {
+    padding: 18px 22px;
+  }
+  .forecast-chart .recharts-responsive-container {
+    height: 200px !important;
+  }
+  .forecast-map {
+    height: 310px;
+    margin-top: 16px;
+  }
+  .driver-stage {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    min-height: 812px;
+  }
+}
+@media (min-width: 1101px) {
+  .impact-panel {
+    padding: 12px 16px;
+  }
+  .comparison .recharts-responsive-container {
+    height: 85px !important;
+  }
+  .pooling {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .pooling-heading p {
+    display: none;
+  }
+  .metric {
+    padding-bottom: 6px;
+  }
+  .metric .delta {
+    height: 16px;
+    min-height: 16px;
+    padding: 0 4px;
+    line-height: 14px;
+    white-space: nowrap;
+  }
+}
+.lane-change.negative {
+  background: #f9e4df;
+  color: #994d43;
+}
