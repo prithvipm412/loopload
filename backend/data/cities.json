@@ -1,0 +1,177 @@
+[
+  {
+    "id": "DEL",
+    "name": "Delhi",
+    "state": "Delhi",
+    "lat": 28.61,
+    "lon": 77.21
+  },
+  {
+    "id": "MUM",
+    "name": "Mumbai",
+    "state": "Maharashtra",
+    "lat": 19.08,
+    "lon": 72.88
+  },
+  {
+    "id": "BLR",
+    "name": "Bengaluru",
+    "state": "Karnataka",
+    "lat": 12.97,
+    "lon": 77.59
+  },
+  {
+    "id": "CHE",
+    "name": "Chennai",
+    "state": "Tamil Nadu",
+    "lat": 13.08,
+    "lon": 80.27
+  },
+  {
+    "id": "HYD",
+    "name": "Hyderabad",
+    "state": "Telangana",
+    "lat": 17.39,
+    "lon": 78.49
+  },
+  {
+    "id": "KOL",
+    "name": "Kolkata",
+    "state": "West Bengal",
+    "lat": 22.57,
+    "lon": 88.36
+  },
+  {
+    "id": "AMD",
+    "name": "Ahmedabad",
+    "state": "Gujarat",
+    "lat": 23.02,
+    "lon": 72.57
+  },
+  {
+    "id": "PUN",
+    "name": "Pune",
+    "state": "Maharashtra",
+    "lat": 18.52,
+    "lon": 73.86
+  },
+  {
+    "id": "JAI",
+    "name": "Jaipur",
+    "state": "Rajasthan",
+    "lat": 26.91,
+    "lon": 75.79
+  },
+  {
+    "id": "NAG",
+    "name": "Nagpur",
+    "state": "Maharashtra",
+    "lat": 21.15,
+    "lon": 79.09
+  },
+  {
+    "id": "NSK",
+    "name": "Nashik",
+    "state": "Maharashtra",
+    "lat": 19.99,
+    "lon": 73.79
+  },
+  {
+    "id": "TPR",
+    "name": "Tiruppur",
+    "state": "Tamil Nadu",
+    "lat": 11.11,
+    "lon": 77.34
+  },
+  {
+    "id": "CBE",
+    "name": "Coimbatore",
+    "state": "Tamil Nadu",
+    "lat": 11.02,
+    "lon": 76.96
+  },
+  {
+    "id": "IDR",
+    "name": "Indore",
+    "state": "Madhya Pradesh",
+    "lat": 22.72,
+    "lon": 75.86
+  },
+  {
+    "id": "SRT",
+    "name": "Surat",
+    "state": "Gujarat",
+    "lat": 21.17,
+    "lon": 72.83
+  },
+  {
+    "id": "LDH",
+    "name": "Ludhiana",
+    "state": "Punjab",
+    "lat": 30.9,
+    "lon": 75.86
+  },
+  {
+    "id": "KNP",
+    "name": "Kanpur",
+    "state": "Uttar Pradesh",
+    "lat": 26.45,
+    "lon": 80.33
+  },
+  {
+    "id": "LKO",
+    "name": "Lucknow",
+    "state": "Uttar Pradesh",
+    "lat": 26.85,
+    "lon": 80.95
+  },
+  {
+    "id": "VTZ",
+    "name": "Visakhapatnam",
+    "state": "Andhra Pradesh",
+    "lat": 17.69,
+    "lon": 83.22
+  },
+  {
+    "id": "COK",
+    "name": "Kochi",
+    "state": "Kerala",
+    "lat": 9.93,
+    "lon": 76.27
+  },
+  {
+    "id": "RPR",
+    "name": "Raipur",
+    "state": "Chhattisgarh",
+    "lat": 21.25,
+    "lon": 81.63
+  },
+  {
+    "id": "BPL",
+    "name": "Bhopal",
+    "state": "Madhya Pradesh",
+    "lat": 23.26,
+    "lon": 77.41
+  },
+  {
+    "id": "RJK",
+    "name": "Rajkot",
+    "state": "Gujarat",
+    "lat": 22.3,
+    "lon": 70.8
+  },
+  {
+    "id": "MDU",
+    "name": "Madurai",
+    "state": "Tamil Nadu",
+    "lat": 9.93,
+    "lon": 78.12
+  },
+  {
+    "id": "VGA",
+    "name": "Vijayawada",
+    "state": "Andhra Pradesh",
+    "lat": 16.51,
+    "lon": 80.65
+  }
+]
