@@ -2144,3 +2144,26 @@ select {
     display: none;
   }
 }
+/* The basemap and deck canvas occupy the entire card; no clipping or side masks. */
+.map-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.map-canvas .maplibregl-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* Let longer API highlights wrap beside the icon without clipping their last line. */
+.highlight-card {
+  display: block;
+}
+.highlight-card > svg {
+  float: left;
+  margin: 1px 4px 0 0;
+}

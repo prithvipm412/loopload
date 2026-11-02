@@ -9,15 +9,16 @@ import {
 import { TripsLayer } from "@deck.gl/geo-layers";
 import type { PathStyleExtensionProps } from "@deck.gl/extensions";
 import { PathStyleExtension } from "@deck.gl/extensions";
-import { Map } from "react-map-gl/maplibre";
+import { Map, type MapRef } from "react-map-gl/maplibre";
 import {
   WebMercatorViewport,
   type MapViewState,
   type PickingInfo,
 } from "@deck.gl/core";
 import type { Scenario, Plan, Leg, Forecast, City } from "./types";
-import { money, num } from "./format";
+import { money, num, explanation } from "./format";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { Sparkles } from "lucide-react";
 interface Props {
   scenario: Scenario;
   plan: Plan;
@@ -30,6 +31,14 @@ interface Props {
   hot?: Forecast[];
   mini?: boolean;
 }
+const INDIA_BOUNDS: [[number, number], [number, number]] = [
+  [68, 6],
+  [92, 36],
+];
+const MAX_BOUNDS: [[number, number], [number, number]] = [
+  [60, 2],
+  [100, 38],
+];
 type LegGroups = { loaded: Leg[]; empty: Leg[] };
 type TruckPosition = { truck_id: string; position: [number, number] };
 function splitLegs(legs: Leg[]): LegGroups {
@@ -78,24 +87,75 @@ export default function RouteMap({
   const [mapFailed, setMapFailed] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const mapRoot = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MapRef>(null);
+  const [initialZoom, setInitialZoom] = useState(mini ? 1.7 : 3);
+  const [basemapLabelCount, setBasemapLabelCount] = useState<number>();
   const [size, setSize] = useState({ width: 800, height: 360 });
   const [viewState, setViewState] = useState<MapViewState>({
-    longitude: 79,
-    latitude: mini ? 19 : 20,
-    zoom: mini ? 2 : hot ? 3 : 3.3,
+    longitude: 80,
+    latitude: 22,
+    zoom: mini ? 1.7 : 3,
+    minZoom: mini ? 1.7 : 3,
+    maxZoom: 7,
     pitch: 0,
     bearing: 0,
   });
   useEffect(() => {
-    const observer = new ResizeObserver(([entry]) =>
-      setSize({
-        width: entry.contentRect.width,
-        height: entry.contentRect.height,
-      }),
-    );
+    let frame = 0;
+    const resize = () => {
+      const bounds = mapRoot.current?.getBoundingClientRect();
+      if (bounds?.width && bounds.height)
+        setSize({ width: bounds.width, height: bounds.height });
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => mapRef.current?.getMap().resize());
+    };
+    const observer = new ResizeObserver(resize);
     if (mapRoot.current) observer.observe(mapRoot.current);
-    return () => observer.disconnect();
+    window.addEventListener("resize", resize);
+    resize();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(frame);
+    };
   }, []);
+  useEffect(() => {
+    if (!size.width || !size.height) return;
+    const fit = new WebMercatorViewport(size).fitBounds(INDIA_BOUNDS, {
+      padding: mini ? 8 : 16,
+    });
+    setInitialZoom(fit.zoom);
+    setViewState({
+      longitude: 80,
+      latitude: 22,
+      zoom: fit.zoom,
+      minZoom: fit.zoom,
+      maxZoom: 7,
+      pitch: 0,
+      bearing: 0,
+    });
+    const frame = requestAnimationFrame(() =>
+      mapRef.current?.getMap().resize(),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [size, mini]);
+  const constrainView = (next: MapViewState): MapViewState => ({
+    ...next,
+    // One controlled camera keeps MapLibre and deck.gl aligned at every zoom.
+    longitude: Math.max(
+      MAX_BOUNDS[0][0],
+      Math.min(MAX_BOUNDS[1][0], next.longitude),
+    ),
+    latitude: Math.max(
+      MAX_BOUNDS[0][1],
+      Math.min(MAX_BOUNDS[1][1], next.latitude),
+    ),
+    zoom: Math.max(initialZoom, Math.min(7, next.zoom)),
+    minZoom: initialZoom,
+    maxZoom: 7,
+    pitch: 0,
+    bearing: 0,
+  });
   // Cull only overlapping labels in screen space; keep every city dot available.
   // This also works with software WebGL and does not alter basemap rendering.
   const labelCities = useMemo(() => {
@@ -121,10 +181,10 @@ export default function RouteMap({
         const [x, y] = viewport.project([c.lon, c.lat]);
         const width = c.name.length * (mini ? 6.5 : 7.5) + 8;
         const box = {
-          left: x - width / 2,
-          right: x + width / 2,
-          top: y + 3,
-          bottom: y + (mini ? 20 : 23),
+          left: x + 12,
+          right: x + 12 + width,
+          top: y + 8,
+          bottom: y + (mini ? 25 : 28),
         };
         if (
           box.left < 4 ||
@@ -285,10 +345,10 @@ export default function RouteMap({
         characterSet: "auto",
         fontSettings: { sdf: true },
         getColor: [74, 66, 56],
-        getPixelOffset: [0, 11],
+        getPixelOffset: [12, 16],
         fontWeight: 500,
         fontFamily: "Inter, sans-serif",
-        getTextAnchor: "middle",
+        getTextAnchor: "start",
         outlineWidth: 0.12,
         outlineColor: [250, 247, 242, 230],
       }),
@@ -319,6 +379,13 @@ export default function RouteMap({
     <div
       ref={mapRoot}
       data-testid="map-canvas"
+      data-min-zoom={initialZoom.toFixed(4)}
+      data-max-zoom="7"
+      data-max-bounds="60,2,100,38"
+      data-view-zoom={viewState.zoom.toFixed(4)}
+      data-view-longitude={viewState.longitude.toFixed(4)}
+      data-view-latitude={viewState.latitude.toFixed(4)}
+      data-basemap-labels-visible={basemapLabelCount}
       data-transition-progress={blend.toFixed(4)}
       data-transitioning={Boolean(previous)}
       data-basemap-status={
@@ -329,25 +396,39 @@ export default function RouteMap({
       <DeckGL
         viewState={viewState}
         onViewStateChange={({ viewState }) =>
-          setViewState(viewState as MapViewState)
+          setViewState(constrainView(viewState as MapViewState))
         }
-        controller
+        controller={{ dragRotate: false, touchRotate: false }}
         layers={layers}
         getCursor={({ isHovering }) => (isHovering ? "pointer" : "grab")}
       >
         <Map
+          ref={mapRef}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+          }}
+          minZoom={initialZoom}
+          maxZoom={7}
           mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
           attributionControl={false}
           onLoad={(e) => {
-            {
-              for (const layer of e.target.getStyle().layers || []) {
-                if (
-                  layer.type === "symbol" &&
-                  (mini || !layer.id.includes("country"))
-                )
-                  e.target.setLayoutProperty(layer.id, "visibility", "none");
-              }
+            const map = e.target;
+            for (const layer of map.getStyle().layers || []) {
+              if (layer.type === "symbol")
+                map.setLayoutProperty(layer.id, "visibility", "none");
             }
+            setBasemapLabelCount(
+              (map.getStyle().layers || []).filter(
+                (layer) =>
+                  layer.type === "symbol" &&
+                  map.getLayoutProperty(layer.id, "visibility") !== "none",
+              ).length,
+            );
+            map.resize();
+            requestAnimationFrame(() => map.resize());
           }}
           onIdle={() => setMapReady(true)}
           onError={() => setMapFailed(true)}
@@ -362,8 +443,8 @@ export default function RouteMap({
         <div
           className="map-tooltip"
           style={{
-            left: Math.min(hover.x + 16, 500),
-            top: Math.max(20, hover.y - 80),
+            left: Math.max(8, Math.min(hover.x + 16, size.width - 300)),
+            top: Math.max(10, Math.min(hover.y - 80, size.height - 160)),
           }}
         >
           <strong>
@@ -380,6 +461,12 @@ export default function RouteMap({
             {num(hover.object.distance_km)} km ·{" "}
             {money(hover.object.revenue_inr)}
           </span>
+          {hover.object.reason && (
+            <span className="tooltip-reason">
+              <Sparkles size={12} />
+              {explanation(hover.object.reason)}
+            </span>
+          )}
         </div>
       )}
     </div>

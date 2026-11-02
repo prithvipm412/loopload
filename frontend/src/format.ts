@@ -12,3 +12,9 @@ export const dayTime = (h: number) => {
   const day = Math.floor(minutes / 1440);
   return `${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][day % 7]} ${String(Math.floor(minutes / 60) % 24).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}${day >= 7 ? ` (+${Math.floor(day / 7)}w)` : ""}`;
 };
+
+// Optional API explanations are prose, but their rupee amounts still use en-IN.
+export const explanation = (text: string) =>
+  text.replace(/₹\s*([+-]?\d[\d,]*(?:\.\d+)?)/g, (_, value: string) =>
+    money(Number(value.replaceAll(",", ""))),
+  );

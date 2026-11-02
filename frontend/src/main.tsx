@@ -47,7 +47,7 @@ import {
 } from "recharts";
 import { api, mockMode } from "./api";
 import type { Scenario, Plan, Compare, Forecast, Leg, Truck } from "./types";
-import { money, num, compact, dayTime } from "./format";
+import { money, num, compact, dayTime, explanation } from "./format";
 import RouteMap from "./RouteMap";
 import PlanHighlights from "./PlanHighlights";
 import { i18n, type Language } from "./i18n";
@@ -1036,7 +1036,7 @@ function LegCard({ leg, scenario }: { leg: Leg; scenario: Scenario }) {
       {leg.reason && (
         <p className="leg-reason">
           <Sparkles size={13} aria-hidden="true" />
-          <span>{leg.reason}</span>
+          <span>{explanation(leg.reason)}</span>
         </p>
       )}
       {leg.compliance ? (

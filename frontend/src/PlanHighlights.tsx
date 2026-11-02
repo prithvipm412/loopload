@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import { explanation } from "./format";
 import type { Plan } from "./types";
 export default function PlanHighlights({ plan }: { plan: Plan }) {
   const highlights =
@@ -25,14 +26,14 @@ export default function PlanHighlights({ plan }: { plan: Plan }) {
               <motion.article
                 key={i}
                 className={`highlight-card tone-${i}`}
-                title={text}
+                title={explanation(text)}
                 variants={{
                   hidden: { opacity: 0, y: 6 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
                 }}
               >
                 <Sparkles size={11} aria-hidden="true" />
-                <span>{text}</span>
+                <span>{explanation(text)}</span>
               </motion.article>
             ))}
           </motion.div>
