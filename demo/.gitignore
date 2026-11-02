@@ -1,0 +1,4 @@
+# Generated recordings, screenshots, and the optional local recorder environment.
+*.webm
+*.png
+.venv/

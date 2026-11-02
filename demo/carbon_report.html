@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LoopLoad · Weekly carbon report</title><style>
+@page { size: A4; margin: 13mm; }
+* { box-sizing:border-box } body { margin:0; background:#FAF7F2; color:#293C35;
+font:14px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+main { max-width:1000px; margin:36px auto; padding:38px; }
+header { display:flex; justify-content:space-between; gap:20px; border-bottom:1px solid #DADFD3; padding-bottom:22px }
+.brand { font-size:13px; font-weight:750; letter-spacing:.15em; text-transform:uppercase; color:#647D69 }
+h1 { margin:8px 0; font-size:36px; line-height:1.15; letter-spacing:-.04em } p { margin:7px 0 }
+.meta { max-width:300px; text-align:right; color:#68736B; font-size:11px; overflow-wrap:anywhere }
+.cards { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:26px 0 }
+.card { background:#E3EBDD; padding:22px 18px; border-radius:15px; border:1px solid #CEDAC7 }
+.card.coral { background:#F3DDD3; border-color:#E8C8BA }.value { display:block; font-size:32px; font-weight:750; letter-spacing:-.03em }
+.label { font-size:12px; color:#53645A }.comparison { padding:14px 18px; background:#FFFDF9; border-radius:10px; border:1px solid #E7E1D6 }
+h2 { margin:26px 0 12px; font-size:17px } table { width:100%; border-collapse:collapse; font-size:12px }
+th { background:#E3EBDD; text-align:right; font-size:11px; color:#4E6756 } td,th { padding:10px 8px; border-bottom:1px solid #E2E2D8 }
+th:first-child,td:first-child { text-align:left } td { text-align:right; font-variant-numeric:tabular-nums } tr { break-inside:avoid }
+tfoot { font-weight:700 } .notes { color:#69746B; font-size:11px; margin-top:23px }.notice { padding:15px; border-radius:10px; background:#F3DDD3 }
+footer { border-top:1px solid #DADFD3; margin-top:20px; padding-top:12px; font-size:11px; color:#69746B }
+@media print { body { print-color-adjust:exact; -webkit-print-color-adjust:exact } main { margin:0; padding:0; max-width:none }
+h1 { font-size:30px }.value { font-size:27px }.cards { margin:20px 0 } .card { padding:16px 12px } td,th { padding:8px 6px } }
+@media screen and (max-width:650px) { main { padding:20px; margin:0 }.cards { grid-template-columns:1fr } header { display:block }.meta { text-align:left } }
+</style></head><body><main>
+<header><div><div class="brand">LoopLoad / Impact report</div><h1>Less empty running.<br>A lighter footprint.</h1><p>Weekly fleet carbon comparison · Awaiting scenario</p></div>
+<div class="meta">Data unavailable<br>Generated 2026-11-02 17:31 UTC</div></header><p class="notice">Baseline and AI plans are unavailable or could not be validated. Start the API or provide matching plan JSON fixtures to calculate this report.</p>
+<section class="cards" aria-label="Fleet savings">
+<div class="card"><span class="value">—</span><span class="label">kg CO₂ saved</span></div>
+<div class="card"><span class="value">—</span><span class="label">diesel litres saved</span></div>
+<div class="card coral"><span class="value">—</span><span class="label">empty kilometres removed</span></div></section>
+<p class="comparison">No savings claimed until baseline and AI plans are available.</p><h2>Impact by fleet owner</h2>
+<table><thead><tr><th scope="col">Owner</th><th scope="col">Baseline<br>CO₂ (kg)</th><th scope="col">AI<br>CO₂ (kg)</th><th scope="col">CO₂ saved<br>(kg)</th><th scope="col">Diesel saved<br>(L)</th><th scope="col">Empty km<br>removed</th></tr></thead><tbody><tr><td colspan="6">Owner figures unavailable — supply plans and their scenario.</td></tr></tbody></table>
+<p class="notes">Method: operational diesel use is estimated at 4 km/L across loaded and empty legs. CO₂ figures come from plan metrics; the demo uses 2.68 kg CO₂/L. Savings = baseline − AI; negative values indicate an increase and are never clipped. Owner figures are summed from truck legs and checked against fleet totals. This is a synthetic demo estimate, not a certified emissions or lifecycle assessment.</p>
+<footer>LoopLoad · More freight carried. Fewer empty kilometres. · Print → Save as PDF · A4 portrait</footer>
+</main></body></html>
