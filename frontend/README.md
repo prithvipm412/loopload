@@ -10,7 +10,7 @@ npm ci
 npm run dev
 ```
 
-Open http://localhost:5173. Mock mode is enabled in `.env.local`; no backend is needed. Basemap tiles and the hosted Inter font require internet. Route overlays and demo interactions remain available when the basemap fails.
+Open http://localhost:5173. The real API is enabled in `.env.local` (`VITE_USE_MOCKS=false`) and defaults to `http://localhost:8000`. Start the backend before opening the frontend. Failed requests automatically use the offline fixtures, show a toast, and change the workspace badge to **Demo fallback**. For fully offline data, set `VITE_USE_MOCKS=true` and restart Vite. Basemap tiles and the hosted Inter font require internet. Route overlays and demo interactions remain available when the basemap fails.
 
 ## Demo
 
@@ -38,4 +38,12 @@ The current data gives 43.1% baseline empty km versus 8.6% in the offline AI fix
 
 ## Real API
 
-After the lead confirms the backend is ready, set `VITE_USE_MOCKS=false` in `.env.local` and restart Vite. `VITE_API_URL` defaults to `http://localhost:8000`. Every contract endpoint has a typed fetcher in `src/api.ts`; failed requests show a toast and use demo data. Keep scenario and plan responses on the same backend version to avoid mixing live and demo identifiers.
+The backend is now enabled with `VITE_USE_MOCKS=false` in `.env.local`. `VITE_API_URL` defaults to `http://localhost:8000`. Every contract endpoint has a typed fetcher in `src/api.ts`; failed requests show a toast and use demo data. The initial workspace keeps its skeleton until comparison finishes (up to 60 seconds). Plan requests allow 45 seconds, solo planning 90 seconds, and replan requests 45 seconds. Duplicate initial solves are suppressed during React Strict Mode. Optional `reason`, `highlights`, `changed_trucks`, and `co2_kg_per_load` fields support missing/null values. Carbon intensity is derived from total carbon and served loads when the API omits it.
+
+## QA
+
+`npm test` runs mock, outage, slow-response, optional-field, and animation regression checks on dedicated test ports 5180/5181. It does not change `.env.local`. Browser tests run serially to avoid contention between software WebGL contexts.
+
+With the frontend and backend running, `npm run qa:live` checks every page, the actual comparison values, all driver languages, and cancellation against real API responses; it rejects any mock fallback. `npm run qa:visual` refreshes `screenshots/` at 1440 × 900.
+
+The opportunity card is below the India-focused map. Comparison cards show actual baseline and AI values for empty km, profit, and CO2 per load. Loads served is a plain count; profit gain is rupees per week, with profit per active truck beside it.

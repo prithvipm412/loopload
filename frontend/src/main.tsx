@@ -36,8 +36,6 @@ import {
 } from "lucide-react";
 import {
   ResponsiveContainer,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -51,6 +49,7 @@ import { api, mockMode } from "./api";
 import type { Scenario, Plan, Compare, Forecast, Leg, Truck } from "./types";
 import { money, num, compact, dayTime } from "./format";
 import RouteMap from "./RouteMap";
+import PlanHighlights from "./PlanHighlights";
 import { i18n, type Language } from "./i18n";
 import "./styles.css";
 const PLAN_TRANSITION_SECONDS = 0.9;
@@ -85,24 +84,35 @@ function App() {
   } | null>(null);
   const [toast, setToast] = useState("");
   const [error, setError] = useState(false);
+  const loadStarted = useRef(false);
   const notify = (s: string) => setToast(s);
-  const load = () => {
+  const [fallbackActive, setFallbackActive] = useState(false);
+  const load = async () => {
     setError(false);
-    Promise.all([
-      api.scenario(),
-      api.plan("baseline"),
-      api.plan("ai"),
-      api.compare(),
-    ])
-      .then(([scenario, baseline, ai, compare]) =>
-        setData({ scenario, baseline, ai, compare }),
-      )
-      .catch(() => setError(true));
+    try {
+      const [scenario, baseline, ai] = await Promise.all([
+        api.scenario(),
+        api.plan("baseline"),
+        api.plan("ai"),
+      ]);
+      // Compare can take 15+ seconds on a cold backend. Keep the skeleton up.
+      // Fetch after plans are cached to avoid requesting duplicate solves.
+      const compare = await api.compare();
+      setData({ scenario, baseline, ai, compare });
+    } catch {
+      setError(true);
+    }
   };
   useEffect(() => {
-    const fallback = (e: Event) => notify((e as CustomEvent<string>).detail);
+    const fallback = (e: Event) => {
+      setFallbackActive(true);
+      notify((e as CustomEvent<string>).detail);
+    };
     window.addEventListener("api-fallback", fallback);
-    load();
+    if (!loadStarted.current) {
+      loadStarted.current = true;
+      load();
+    }
     return () => window.removeEventListener("api-fallback", fallback);
   }, []);
   useEffect(() => {
@@ -134,13 +144,56 @@ function App() {
         </nav>
         <div className="header-meta">
           <span className="status-dot" />
-          {mockMode ? "Demo workspace" : "Live workspace"}
+          {mockMode
+            ? "Demo workspace"
+            : fallbackActive
+              ? "Demo fallback"
+              : "Live workspace"}
           <span className="avatar">RT</span>
         </div>
       </header>
       {data ? (
         <Routes>
-          <Route path="/" element={<Dashboard {...data} notify={notify} />} />
+          <Route
+            path="/"
+            element={
+              <Dashboard
+                {...data}
+                notify={notify}
+                onPlanUpdate={(next) =>
+                  setData((current) =>
+                    current
+                      ? {
+                          ...current,
+                          ai: next,
+                          compare: {
+                            baseline: current.baseline.metrics,
+                            ai: next.metrics,
+                            delta: {
+                              empty_km:
+                                next.metrics.empty_km -
+                                current.baseline.metrics.empty_km,
+                              empty_pct:
+                                next.metrics.empty_pct -
+                                current.baseline.metrics.empty_pct,
+                              profit_inr:
+                                next.metrics.profit_inr -
+                                current.baseline.metrics.profit_inr,
+                              co2_kg:
+                                next.metrics.co2_kg -
+                                current.baseline.metrics.co2_kg,
+                              loads_served:
+                                next.metrics.loads_served -
+                                current.baseline.metrics.loads_served,
+                            },
+                          },
+                        }
+                      : current,
+                  )
+                }
+              />
+            }
+          />
           <Route path="/forecast" element={<ForecastPage {...data} />} />
           <Route path="/driver/:truckId" element={<DriverPage {...data} />} />
           <Route
@@ -153,7 +206,11 @@ function App() {
           />
         </Routes>
       ) : (
-        <div className="loading">
+        <div
+          className="loading"
+          data-testid="loading-skeleton"
+          aria-busy="true"
+        >
           {error ? (
             <>
               <h2>Unable to load the workspace</h2>
@@ -210,7 +267,8 @@ function Dashboard({
   ai,
   compare,
   notify,
-}: Data & { notify: (s: string) => void }) {
+  onPlanUpdate,
+}: Data & { notify: (s: string) => void; onPlanUpdate: (plan: Plan) => void }) {
   const [mode, setMode] = useState<"baseline" | "ai">("baseline");
   const [aiPlan, setAiPlan] = useState(ai);
   const [previous, setPrevious] = useState<Plan>();
@@ -223,6 +281,23 @@ function Dashboard({
   const [busy, setBusy] = useState(false);
   const [changed, setChanged] = useState<string[]>([]);
   const plan = mode === "baseline" ? baseline : aiPlan;
+  const heroIds = new Set(scenario.loads.slice(0, 4).map((l) => l.id));
+  const heroTruckId =
+    [...aiPlan.trucks].sort(
+      (a, b) =>
+        b.legs.filter((l) => l.load_id && heroIds.has(l.load_id)).length -
+        a.legs.filter((l) => l.load_id && heroIds.has(l.load_id)).length,
+    )[0]?.truck_id ?? "T01";
+  const heroWeek = plan.trucks.find((t) => t.truck_id === heroTruckId);
+  const loadedHeroLegs =
+    heroWeek?.legs.filter(
+      (l) => l.kind === "loaded" && l.load_id && heroIds.has(l.load_id),
+    ).length ?? 0;
+  useEffect(() => {
+    if (!changed.length) return;
+    const timer = setTimeout(() => setChanged([]), 3000);
+    return () => clearTimeout(timer);
+  }, [changed]);
   useEffect(() => {
     if (!playing) return;
     let last = performance.now();
@@ -256,7 +331,7 @@ function Dashboard({
   }, [plan]);
   const replan = async () => {
     const leg = aiPlan.trucks
-      .find((t) => t.truck_id === "T01")
+      .find((t) => t.truck_id === heroTruckId)
       ?.legs.find((l) => l.load_id && l.depart_h >= time);
     if (!leg?.load_id) {
       notify(
@@ -271,18 +346,21 @@ function Dashboard({
         load_id: leg.load_id,
         at_h: time,
       });
-      const ids = next.trucks
-        .filter(
-          (t) =>
-            JSON.stringify(t.legs) !==
-            JSON.stringify(
-              aiPlan.trucks.find((p) => p.truck_id === t.truck_id)?.legs,
-            ),
-        )
-        .map((t) => t.truck_id);
+      const ids =
+        next.changed_trucks ??
+        next.trucks
+          .filter(
+            (t) =>
+              JSON.stringify(t.legs) !==
+              JSON.stringify(
+                aiPlan.trucks.find((p) => p.truck_id === t.truck_id)?.legs,
+              ),
+          )
+          .map((t) => t.truck_id);
       setPrevious(plan);
       setBlend(0);
       setAiPlan(next);
+      onPlanUpdate(next);
       setMode("ai");
       setChanged(ids);
       notify(
@@ -299,7 +377,7 @@ function Dashboard({
       .reduce((s, l) => s + l.diesel_inr, 0);
   const metrics = [
     {
-      label: "Empty kilometres",
+      label: "Empty km",
       testId: "counter-empty-km",
       value: plan.metrics.empty_km,
       base: baseline.metrics.empty_km,
@@ -317,11 +395,20 @@ function Dashboard({
       icon: Fuel,
     },
     {
-      label: "CO₂ emissions",
+      label: "CO2 per load",
       testId: "counter-co2",
-      value: plan.metrics.co2_kg / 1000,
-      base: baseline.metrics.co2_kg / 1000,
-      format: (v: number) => `${num(v, 1)} t`,
+      value:
+        (plan.metrics.co2_kg_per_load ??
+          (plan.metrics.loads_served
+            ? plan.metrics.co2_kg / plan.metrics.loads_served
+            : 0)) / 1000,
+      base:
+        (baseline.metrics.co2_kg_per_load ??
+          (baseline.metrics.loads_served
+            ? baseline.metrics.co2_kg / baseline.metrics.loads_served
+            : 0)) / 1000,
+      format: (v: number) => `${num(v, 2)} t`,
+      subtext: `Total CO2 ${num(plan.metrics.co2_kg / 1000, 1)} t`,
       good: "down",
       icon: Leaf,
     },
@@ -354,7 +441,7 @@ function Dashboard({
     },
   ];
   return (
-    <main>
+    <main className="dashboard-page">
       <section className="page-heading">
         <div>
           <div className="eyebrow">
@@ -446,30 +533,35 @@ function Dashboard({
                 Truck in motion
               </span>
             </div>
-            <div className="map-story">
-              <span className="story-icon">
-                <Sparkles size={19} />
-              </span>
-              <div>
-                <strong>
-                  {mode === "ai"
-                    ? "A full loop. A fuller week."
-                    : "The return journey is the opportunity."}
-                </strong>
-                <p>
-                  {mode === "ai"
-                    ? "Tiruppur → Delhi → Jaipur → Nagpur → home. Four legs, all loaded."
-                    : "Plan the whole week to turn empty return trips into paying loads."}
-                </p>
-              </div>
-              <button
-                aria-label="Open hero truck"
-                onClick={() => setSelected("T01")}
-              >
-                <ArrowUpRight size={18} />
-              </button>
-            </div>
           </section>
+          <div className="map-story panel">
+            <span className="story-icon">
+              <Sparkles size={19} />
+            </span>
+            <div>
+              <strong>
+                {mode === "ai"
+                  ? loadedHeroLegs === 4
+                    ? "A full loop. A fuller week."
+                    : "A week with room to earn."
+                  : "The return journey is the opportunity."}
+              </strong>
+              <p>
+                {mode === "ai"
+                  ? loadedHeroLegs === 4
+                    ? `Tiruppur → Delhi → Jaipur → Nagpur → home. Four loaded legs on ${heroTruckId}.`
+                    : `${loadedHeroLegs} hero-chain loads planned for ${heroTruckId}. Open the truck’s week.`
+                  : "Plan the whole week to turn empty return trips into paying loads."}
+              </p>
+            </div>
+            <button
+              aria-label="Open hero truck"
+              onClick={() => setSelected(heroTruckId)}
+            >
+              <ArrowUpRight size={18} />
+            </button>
+          </div>
+
           <section className="timeline panel">
             <div className="timeline-top">
               <button
@@ -554,7 +646,7 @@ function Dashboard({
               const delta = m.value - m.base;
               const better = m.good === "down" ? delta < 0 : delta > 0;
               return (
-                <div className="metric" key={m.label}>
+                <div className="metric" data-metric={m.testId} key={m.label}>
                   <span className="metric-label">
                     <m.icon size={14} />
                     {m.label}
@@ -562,6 +654,9 @@ function Dashboard({
                   <strong data-testid={m.testId}>
                     <Counter value={m.value} format={m.format} />
                   </strong>
+                  {m.subtext && (
+                    <small className="metric-detail">{m.subtext}</small>
+                  )}
                   <small
                     className={
                       delta === 0
@@ -580,8 +675,9 @@ function Dashboard({
                         ) : (
                           <ArrowUpRight size={11} />
                         )}{" "}
-                        {num((Math.abs(delta) / Math.max(1, m.base)) * 100, 1)}%
-                        vs today
+                        {m.testId === "counter-loads"
+                          ? `${delta > 0 ? "+" : ""}${num(delta)} vs today`
+                          : `${num((Math.abs(delta) / Math.max(1, m.base)) * 100, 1)}% vs today`}
                       </>
                     )}
                   </small>
@@ -589,6 +685,7 @@ function Dashboard({
               );
             })}
           </div>
+          <PlanHighlights plan={plan} />
           <Comparison compare={compare} />
           <div className="truck-list-heading">
             <h3>
@@ -637,6 +734,8 @@ function Dashboard({
       <Pooling
         scenario={scenario}
         ai={aiPlan}
+        plan={plan}
+        baseline={baseline}
         owner={owner}
         setOwner={setOwner}
       />
@@ -654,92 +753,75 @@ function Dashboard({
   );
 }
 function Comparison({ compare }: Pick<Data, "compare">) {
-  const chart = [
+  const carbon = (m: Compare["ai"]) =>
+    (m.co2_kg_per_load ?? (m.loads_served ? m.co2_kg / m.loads_served : 0)) /
+    1000;
+  const rows = [
     {
-      name: "Empty km",
+      label: "Empty km",
       baseline: compare.baseline.empty_km,
       ai: compare.ai.empty_km,
+      format: (n: number) => `${num(n)} km`,
     },
     {
-      name: "Profit ₹",
+      label: "Profit ₹",
       baseline: compare.baseline.profit_inr,
       ai: compare.ai.profit_inr,
+      format: compact,
     },
     {
-      name: "CO₂ kg",
-      baseline: compare.baseline.co2_kg,
-      ai: compare.ai.co2_kg,
+      label: "CO2 per load",
+      baseline: carbon(compare.baseline),
+      ai: carbon(compare.ai),
+      format: (n: number) => `${num(n, 2)} t`,
     },
   ];
-  const normalized = chart.map((x) => ({
-    ...x,
-    baselineIndex: x.baseline < 0 ? -100 : 100,
-    aiIndex: x.baseline ? (x.ai / Math.abs(x.baseline)) * 100 : 0,
-  }));
   return (
-    <div className="comparison">
-      <h3>A smarter week, compared</h3>
-      <p>Baseline magnitude = 100 · hover for actual values</p>
-      <ResponsiveContainer width="100%" height={145}>
-        <BarChart
-          data={normalized}
-          barGap={5}
-          margin={{ left: -30, right: 3, top: 8, bottom: 0 }}
-        >
-          <CartesianGrid
-            vertical={false}
-            stroke="#E6DCCB"
-            strokeDasharray="3 4"
-          />
-          <XAxis
-            dataKey="name"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 10, fill: "#7A7064" }}
-          />
-          <YAxis
-            tick={{ fontSize: 9, fill: "#7A7064" }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <Tooltip
-            content={({ active, payload }) =>
-              active && payload?.length ? (
-                <div className="chart-tooltip">
-                  {payload[0].payload.name}
-                  <br />
-                  Today: {num(payload[0].payload.baseline)}
-                  <br />
-                  AI: {num(payload[0].payload.ai)}
-                </div>
-              ) : null
-            }
-          />
-          <Bar
-            name="Baseline"
-            dataKey="baselineIndex"
-            fill="#D9D0C2"
-            radius={[4, 4, 0, 0]}
-          />
-          <Bar
-            name="LoopLoad AI"
-            dataKey="aiIndex"
-            fill="#9CCBE8"
-            radius={[4, 4, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
-      <div className="chart-legend">
-        <span>
-          <i style={{ background: "#D9D0C2" }} />
-          Baseline
-        </span>
-        <span>
-          <i style={{ background: "#9CCBE8" }} />
-          LoopLoad AI
-        </span>
+    <section className="comparison" aria-label="Baseline and AI comparison">
+      <div className="comparison-heading">
+        <h3>One week. A better outcome.</h3>
+        <div className="comparison-legend">
+          <span>
+            <i />
+            Baseline
+          </span>
+          <span>
+            <i />
+            AI
+          </span>
+        </div>
       </div>
-    </div>
+      <div className="comparison-cards">
+        {rows.map((row) => {
+          const max = Math.max(Math.abs(row.baseline), Math.abs(row.ai), 1);
+          return (
+            <article className="comparison-stat" key={row.label}>
+              <h4>{row.label}</h4>
+              <strong
+                className="baseline-value"
+                aria-label={`Baseline ${row.label}: ${row.format(row.baseline)}`}
+              >
+                {row.format(row.baseline)}
+              </strong>
+              <span className="value-track" aria-hidden="true">
+                <i
+                  style={{ width: `${(Math.abs(row.baseline) / max) * 100}%` }}
+                />
+              </span>
+              <strong
+                className="ai-value"
+                aria-label={`AI ${row.label}: ${row.format(row.ai)}`}
+              >
+                {row.format(row.ai)}
+              </strong>
+              <span className="value-track ai" aria-hidden="true">
+                <i style={{ width: `${(Math.abs(row.ai) / max) * 100}%` }} />
+              </span>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 function TruckDrawer({
@@ -951,6 +1033,12 @@ function LegCard({ leg, scenario }: { leg: Leg; scenario: Scenario }) {
           </strong>
         </span>
       </div>
+      {leg.reason && (
+        <p className="leg-reason">
+          <Sparkles size={13} aria-hidden="true" />
+          <span>{leg.reason}</span>
+        </p>
+      )}
       {leg.compliance ? (
         <div
           data-testid="compliance-badge"
@@ -980,17 +1068,26 @@ function LegCard({ leg, scenario }: { leg: Leg; scenario: Scenario }) {
 function Pooling({
   scenario,
   ai,
+  plan,
+  baseline,
   owner,
   setOwner,
 }: {
   scenario: Scenario;
   ai: Plan;
+  plan: Plan;
+  baseline: Plan;
   owner: string;
   setOwner: (s: string) => void;
 }) {
   const [solo, setSolo] = useState<Plan>();
+  const soloStarted = useRef(false);
+  const profitDelta = plan.metrics.profit_inr - baseline.metrics.profit_inr;
   useEffect(() => {
-    api.plan("ai_solo").then(setSolo);
+    if (!soloStarted.current) {
+      soloStarted.current = true;
+      api.plan("ai_solo").then(setSolo);
+    }
   }, []);
   return (
     <section data-testid="pooling-card" className="pooling panel">
@@ -1012,6 +1109,25 @@ function Pooling({
       <div className="pool-stat">
         <span>Pooled fleet profit</span>
         <strong className="sage">{compact(ai.metrics.profit_inr)}</strong>
+      </div>
+      <div className="pool-stat profit-gain">
+        <span>Profit change vs today</span>
+        <strong className={profitDelta >= 0 ? "sage" : ""}>
+          {profitDelta === 0
+            ? money(0)
+            : `${profitDelta > 0 ? "+" : "−"}${compact(Math.abs(profitDelta))}`}
+          <small> / week</small>
+        </strong>
+      </div>
+      <div className="pool-stat">
+        <span>Profit / active truck</span>
+        <strong>
+          {money(
+            Math.round(
+              plan.metrics.profit_inr / Math.max(1, plan.metrics.trucks_used),
+            ),
+          )}
+        </strong>
       </div>
       <label className="owner-filter">
         View on map
@@ -1306,6 +1422,13 @@ function DriverPage({ scenario, ai }: Data) {
               {text.capacity} {truck.capacity_t} {text.tonnes}
             </span>
           </div>
+          {!next && (
+            <section className="pickup-card driver-empty">
+              <Package size={22} />
+              <h2>{text.noPickup}</h2>
+              <p>{text.noPickupDetail}</p>
+            </section>
+          )}
           {next && (
             <section className="pickup-card">
               <div className="pickup-eyebrow">

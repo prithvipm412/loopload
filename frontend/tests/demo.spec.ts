@@ -105,7 +105,7 @@ test("light projector layout and narrow screen stay within viewport", async ({
 test("API outage shows an error toast and retains the interactive mock dashboard", async ({
   page,
 }) => {
-  await page.goto("http://127.0.0.1:5174/");
+  await page.goto("http://127.0.0.1:5181/");
   await expect(
     page.getByRole("heading", { name: "A better week for every truck." }),
   ).toBeVisible();

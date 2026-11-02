@@ -73,6 +73,7 @@ export interface Leg {
   co2_kg: number;
   path: [number, number][];
   compliance?: ComplianceResult;
+  reason?: string | null;
 }
 export interface Metrics {
   total_km: number;
@@ -84,6 +85,7 @@ export interface Metrics {
   toll_inr: number;
   profit_inr: number;
   co2_kg: number;
+  co2_kg_per_load?: number | null;
   loads_served: number;
   loads_total: number;
   trucks_used: number;
@@ -102,6 +104,9 @@ export interface Plan {
   trucks: TruckPlan[];
   unassigned_loads: string[];
   metrics: Metrics;
+  highlights?: string[] | null;
+  changed_trucks?: string[] | null;
+  replan_of?: string | null;
 }
 export interface Scenario {
   week_start: string;

@@ -12,7 +12,8 @@
     "loads_served": 12,
     "loads_total": 140,
     "trucks_used": 11,
-    "idle_h": 427.7
+    "idle_h": 427.7,
+    "co2_kg_per_load": 1709.07
   },
   "ai": {
     "total_km": 45830.4,
@@ -27,7 +28,8 @@
     "loads_served": 27,
     "loads_total": 140,
     "trucks_used": 15,
-    "idle_h": 203.2
+    "idle_h": 203.2,
+    "co2_kg_per_load": 1137.27
   },
   "delta": {
     "empty_km": -9264.5,

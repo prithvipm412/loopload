@@ -98,7 +98,8 @@
           "compliance": {
             "ok": true,
             "issues": []
-          }
+          },
+          "reason": "Starts in Tiruppur with a confirmed textiles pickup."
         },
         {
           "truck_id": "T01",
@@ -207,7 +208,8 @@
           "compliance": {
             "ok": true,
             "issues": []
-          }
+          },
+          "reason": "Collects FMCG in Delhi after unloading textiles."
         },
         {
           "truck_id": "T01",
@@ -388,7 +390,8 @@
           "compliance": {
             "ok": true,
             "issues": []
-          }
+          },
+          "reason": "Links Jaipur to Nagpur with another paying load."
         },
         {
           "truck_id": "T01",
@@ -541,7 +544,8 @@
           "compliance": {
             "ok": true,
             "issues": []
-          }
+          },
+          "reason": "Carries oranges back to the Tiruppur home hub."
         }
       ],
       "totals": {
@@ -557,7 +561,8 @@
         "loads_served": 4,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 24.0
+        "idle_h": 24.0,
+        "co2_kg_per_load": 824.48
       }
     },
     {
@@ -576,7 +581,8 @@
         "loads_served": 0,
         "loads_total": 140,
         "trucks_used": 0,
-        "idle_h": 0.0
+        "idle_h": 0.0,
+        "co2_kg_per_load": 0
       }
     },
     {
@@ -840,7 +846,8 @@
         "loads_served": 2,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 32.7
+        "idle_h": 32.7,
+        "co2_kg_per_load": 1294.3
       }
     },
     {
@@ -859,7 +866,8 @@
         "loads_served": 0,
         "loads_total": 140,
         "trucks_used": 0,
-        "idle_h": 0.0
+        "idle_h": 0.0,
+        "co2_kg_per_load": 0
       }
     },
     {
@@ -1030,7 +1038,8 @@
         "loads_served": 1,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 0.0
+        "idle_h": 0.0,
+        "co2_kg_per_load": 1168.3
       }
     },
     {
@@ -1432,7 +1441,8 @@
         "loads_served": 2,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 17.1
+        "idle_h": 17.1,
+        "co2_kg_per_load": 1603.85
       }
     },
     {
@@ -1898,7 +1908,8 @@
         "loads_served": 2,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 9.0
+        "idle_h": 9.0,
+        "co2_kg_per_load": 1215.15
       }
     },
     {
@@ -1917,7 +1928,8 @@
         "loads_served": 0,
         "loads_total": 140,
         "trucks_used": 0,
-        "idle_h": 0.0
+        "idle_h": 0.0,
+        "co2_kg_per_load": 0
       }
     },
     {
@@ -2274,7 +2286,8 @@
         "loads_served": 2,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 16.5
+        "idle_h": 16.5,
+        "co2_kg_per_load": 844.45
       }
     },
     {
@@ -2488,7 +2501,8 @@
         "loads_served": 1,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 3.0
+        "idle_h": 3.0,
+        "co2_kg_per_load": 1558.0
       }
     },
     {
@@ -2849,7 +2863,8 @@
         "loads_served": 1,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 34.7
+        "idle_h": 34.7,
+        "co2_kg_per_load": 1388.0
       }
     },
     {
@@ -3198,7 +3213,8 @@
         "loads_served": 2,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 15.9
+        "idle_h": 15.9,
+        "co2_kg_per_load": 1233.35
       }
     },
     {
@@ -3558,7 +3574,8 @@
         "loads_served": 2,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 6.0
+        "idle_h": 6.0,
+        "co2_kg_per_load": 1233.35
       }
     },
     {
@@ -3691,7 +3708,8 @@
         "loads_served": 1,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 0.0
+        "idle_h": 0.0,
+        "co2_kg_per_load": 726.1
       }
     },
     {
@@ -4070,7 +4088,8 @@
         "loads_served": 2,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 6.0
+        "idle_h": 6.0,
+        "co2_kg_per_load": 978.9
       }
     },
     {
@@ -4260,7 +4279,8 @@
         "loads_served": 1,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 3.0
+        "idle_h": 3.0,
+        "co2_kg_per_load": 1583.9
       }
     },
     {
@@ -4423,7 +4443,8 @@
         "loads_served": 1,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 0.0
+        "idle_h": 0.0,
+        "co2_kg_per_load": 1080.7
       }
     },
     {
@@ -5194,7 +5215,8 @@
         "loads_served": 3,
         "loads_total": 140,
         "trucks_used": 1,
-        "idle_h": 35.3
+        "idle_h": 35.3,
+        "co2_kg_per_load": 1032.2
       }
     },
     {
@@ -5213,7 +5235,8 @@
         "loads_served": 0,
         "loads_total": 140,
         "trucks_used": 0,
-        "idle_h": 0.0
+        "idle_h": 0.0,
+        "co2_kg_per_load": 0
       }
     },
     {
@@ -5232,7 +5255,8 @@
         "loads_served": 0,
         "loads_total": 140,
         "trucks_used": 0,
-        "idle_h": 0.0
+        "idle_h": 0.0,
+        "co2_kg_per_load": 0
       }
     }
   ],
@@ -5364,6 +5388,12 @@
     "loads_served": 27,
     "loads_total": 140,
     "trucks_used": 15,
-    "idle_h": 203.2
-  }
+    "idle_h": 203.2,
+    "co2_kg_per_load": 1137.27
+  },
+  "highlights": [
+    "T01: four loaded legs. One loop.",
+    "27 loads across 15 active trucks.",
+    "8.6% empty fleet distance."
+  ]
 }

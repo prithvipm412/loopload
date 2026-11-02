@@ -125,6 +125,13 @@ def finish(plan):
             item['path'] = paths.get(f'{a}-{b}') or [[cities[a]['lon'], cities[a]['lat']], [cities[b]['lon'], cities[b]['lat']]]
             item['compliance'] = check_leg(item, loads.get(item['load_id']), trucks[tp['truck_id']], config)
     compute_metrics(plan, scenario)
+    reasons={"L001":"Starts in Tiruppur with a confirmed textiles pickup.","L002":"Collects FMCG in Delhi after unloading textiles.","L003":"Links Jaipur to Nagpur with another paying load.","L004":"Carries oranges back to the Tiruppur home hub."}
+    for tp in plan['trucks']:
+        for item in tp['legs']:
+            if tp['truck_id']=='T01':item['reason']=reasons.get(item['load_id'],'Returns home without a matching load.')
+        tp['totals']['co2_kg_per_load']=round(tp['totals']['co2_kg']/tp['totals']['loads_served'],2) if tp['totals']['loads_served'] else 0
+    plan['metrics']['co2_kg_per_load']=round(plan['metrics']['co2_kg']/plan['metrics']['loads_served'],2) if plan['metrics']['loads_served'] else 0
+    if plan['mode']!='baseline':plan['highlights']=['T01: four loaded legs. One loop.',f"{plan['metrics']['loads_served']} loads across {plan['metrics']['trucks_used']} active trucks.",f"{plan['metrics']['empty_pct']}% empty fleet distance."]
     return plan
 
 

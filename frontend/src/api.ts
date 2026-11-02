@@ -30,6 +30,7 @@ async function request<T>(
   path: string,
   fallback: () => T,
   body?: unknown,
+  timeoutMs = 15000,
 ): Promise<T> {
   if (mockMode) return structuredClone(fallback());
   try {
@@ -37,7 +38,7 @@ async function request<T>(
       method: body === undefined ? "GET" : "POST",
       headers: { "Content-Type": "application/json" },
       body: body === undefined ? undefined : JSON.stringify(body),
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(timeoutMs),
     });
     if (!r.ok) throw Error(`${r.status}`);
     return (await r.json()) as T;
@@ -65,12 +66,19 @@ export const api = {
         return soloJson as unknown as Plan;
       },
       { mode },
+      mode === "ai_solo" ? 90000 : 45000,
     );
     plans.set(p.plan_id, p);
     return p;
   },
   getPlan: (id: string) => request<Plan>(`/plan/${id}`, () => getMockPlan(id)),
-  compare: () => request<Compare>("/compare", () => compareJson as Compare),
+  compare: () =>
+    request<Compare>(
+      "/compare",
+      () => compareJson as Compare,
+      undefined,
+      60000,
+    ),
   replan: async (plan_id: string, event: ReplanEvent) => {
     const p = await request<Plan>(
       "/replan",
@@ -78,11 +86,17 @@ export const api = {
         const p = structuredClone(getMockPlan(plan_id));
         p.plan_id = "ai-replan42";
         p.solve_time_s = 1.8;
+        p.replan_of = plan_id;
+        p.changed_trucks = [];
         if (event.type === "cancel_load") {
           for (const t of p.trucks) {
             for (const l of t.legs)
               if (l.load_id === event.load_id && l.depart_h >= event.at_h) {
+                if (!p.changed_trucks!.includes(t.truck_id))
+                  p.changed_trucks!.push(t.truck_id);
                 l.kind = "empty";
+                l.reason =
+                  "Load cancelled; repositioning preserves the remaining schedule.";
                 l.load_id = null;
                 l.revenue_inr = 0;
                 l.compliance = { ok: true, issues: [] };
@@ -91,9 +105,16 @@ export const api = {
           p.unassigned_loads.push(event.load_id);
         }
         recompute(p);
+        const hero = p.trucks.find((t) => t.truck_id === "T01");
+        p.highlights = [
+          `T01: ${hero?.legs.filter((l) => l.kind === "loaded").length ?? 0} paying legs this week.`,
+          `${p.metrics.loads_served} loads across ${p.metrics.trucks_used} active trucks.`,
+          `${p.metrics.empty_pct.toLocaleString("en-IN", { maximumFractionDigits: 1 })}% empty fleet distance.`,
+        ];
         return p;
       },
       { plan_id, event },
+      45000,
     );
     plans.set(p.plan_id, p);
     return p;
@@ -161,6 +182,9 @@ function recompute(p: Plan) {
       toll_inr: sum("toll_inr"),
       profit_inr: sum("revenue_inr") - sum("diesel_inr") - sum("toll_inr"),
       co2_kg: sum("co2_kg"),
+      co2_kg_per_load: legs.some((l) => l.kind === "loaded")
+        ? sum("co2_kg") / legs.filter((l) => l.kind === "loaded").length
+        : 0,
       loads_served: legs.filter((l) => l.kind === "loaded").length,
       loads_total: scenario.loads.length,
       trucks_used: new Set(legs.map((l) => l.truck_id)).size,
