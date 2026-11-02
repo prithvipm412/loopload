@@ -1,0 +1,454 @@
+{
+  "week_start": "2026-11-09T00:00:00+05:30",
+  "cities": [
+    {
+      "id": "TPR",
+      "name": "Tiruppur",
+      "state": "Tamil Nadu",
+      "lat": 11.11,
+      "lon": 77.34
+    },
+    {
+      "id": "DEL",
+      "name": "Delhi",
+      "state": "Delhi",
+      "lat": 28.61,
+      "lon": 77.21
+    },
+    {
+      "id": "JAI",
+      "name": "Jaipur",
+      "state": "Rajasthan",
+      "lat": 26.91,
+      "lon": 75.79
+    },
+    {
+      "id": "NAG",
+      "name": "Nagpur",
+      "state": "Maharashtra",
+      "lat": 21.15,
+      "lon": 79.09
+    },
+    {
+      "id": "BLR",
+      "name": "Bengaluru",
+      "state": "Karnataka",
+      "lat": 12.97,
+      "lon": 77.59
+    },
+    {
+      "id": "NSK",
+      "name": "Nashik",
+      "state": "Maharashtra",
+      "lat": 19.99,
+      "lon": 73.79
+    }
+  ],
+  "owners": [
+    {
+      "id": "O1",
+      "name": "Owner 1",
+      "home_city": "TPR",
+      "trucks": [
+        "T01",
+        "T02"
+      ]
+    },
+    {
+      "id": "O2",
+      "name": "Owner 2",
+      "home_city": "JAI",
+      "trucks": [
+        "T03",
+        "T04"
+      ]
+    },
+    {
+      "id": "O3",
+      "name": "Owner 3",
+      "home_city": "NSK",
+      "trucks": [
+        "T05"
+      ]
+    }
+  ],
+  "trucks": [
+    {
+      "id": "T01",
+      "owner_id": "O1",
+      "reg_no": "TN39AB1234",
+      "type": "open_body",
+      "capacity_t": 16,
+      "home_city": "TPR",
+      "start_city": "TPR",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Driver 1",
+        "language": "hi"
+      }
+    },
+    {
+      "id": "T02",
+      "owner_id": "O1",
+      "reg_no": "TN39AB1235",
+      "type": "open_body",
+      "capacity_t": 16,
+      "home_city": "DEL",
+      "start_city": "DEL",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Driver 2",
+        "language": "hi"
+      }
+    },
+    {
+      "id": "T03",
+      "owner_id": "O2",
+      "reg_no": "TN39AB1236",
+      "type": "open_body",
+      "capacity_t": 16,
+      "home_city": "JAI",
+      "start_city": "JAI",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Driver 3",
+        "language": "hi"
+      }
+    },
+    {
+      "id": "T04",
+      "owner_id": "O2",
+      "reg_no": "TN39AB1237",
+      "type": "open_body",
+      "capacity_t": 16,
+      "home_city": "NAG",
+      "start_city": "NAG",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Driver 4",
+        "language": "hi"
+      }
+    },
+    {
+      "id": "T05",
+      "owner_id": "O3",
+      "reg_no": "TN39AB1238",
+      "type": "container",
+      "capacity_t": 16,
+      "home_city": "NSK",
+      "start_city": "NSK",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Driver 5",
+        "language": "hi"
+      }
+    }
+  ],
+  "loads": [
+    {
+      "id": "L001",
+      "origin": "TPR",
+      "destination": "DEL",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 0,
+      "pickup_end_h": 12,
+      "deliver_by_h": 144.21555555555557,
+      "freight_inr": 164430,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L002",
+      "origin": "DEL",
+      "destination": "JAI",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 72,
+      "pickup_end_h": 84,
+      "deliver_by_h": 96.7911111111111,
+      "freight_inr": 19864,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L003",
+      "origin": "JAI",
+      "destination": "NAG",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 88,
+      "pickup_end_h": 100,
+      "deliver_by_h": 154.88,
+      "freight_inr": 61074,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L004",
+      "origin": "NAG",
+      "destination": "BLR",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 125,
+      "pickup_end_h": 137,
+      "deliver_by_h": 168,
+      "freight_inr": 78026,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L005",
+      "origin": "BLR",
+      "destination": "TPR",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 155,
+      "pickup_end_h": 167,
+      "deliver_by_h": 168,
+      "freight_inr": 17628,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L006",
+      "origin": "DEL",
+      "destination": "JAI",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 0,
+      "pickup_end_h": 12,
+      "deliver_by_h": 24.79111111111111,
+      "freight_inr": 19864,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L007",
+      "origin": "JAI",
+      "destination": "NAG",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 15,
+      "pickup_end_h": 27,
+      "deliver_by_h": 81.88,
+      "freight_inr": 61074,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L008",
+      "origin": "NAG",
+      "destination": "NSK",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 58,
+      "pickup_end_h": 70,
+      "deliver_by_h": 106.36888888888889,
+      "freight_inr": 47879,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L009",
+      "origin": "NSK",
+      "destination": "BLR",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 95,
+      "pickup_end_h": 107,
+      "deliver_by_h": 166.40222222222224,
+      "freight_inr": 74302,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L010",
+      "origin": "BLR",
+      "destination": "TPR",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 145,
+      "pickup_end_h": 157,
+      "deliver_by_h": 168,
+      "freight_inr": 17628,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L011",
+      "origin": "JAI",
+      "destination": "DEL",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 0,
+      "pickup_end_h": 12,
+      "deliver_by_h": 24.79111111111111,
+      "freight_inr": 19864,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L012",
+      "origin": "DEL",
+      "destination": "NAG",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 20,
+      "pickup_end_h": 32,
+      "deliver_by_h": 90.58,
+      "freight_inr": 71896,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L013",
+      "origin": "NAG",
+      "destination": "BLR",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 100,
+      "pickup_end_h": 112,
+      "deliver_by_h": 168,
+      "freight_inr": 78026,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L014",
+      "origin": "BLR",
+      "destination": "TPR",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 148,
+      "pickup_end_h": 160,
+      "deliver_by_h": 168,
+      "freight_inr": 17628,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L015",
+      "origin": "NAG",
+      "destination": "NSK",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 0,
+      "pickup_end_h": 12,
+      "deliver_by_h": 48.36888888888889,
+      "freight_inr": 47879,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L016",
+      "origin": "NSK",
+      "destination": "DEL",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 30,
+      "pickup_end_h": 42,
+      "deliver_by_h": 105.44,
+      "freight_inr": 86112,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L017",
+      "origin": "DEL",
+      "destination": "JAI",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 120,
+      "pickup_end_h": 132,
+      "deliver_by_h": 144.79111111111112,
+      "freight_inr": 19864,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L018",
+      "origin": "NSK",
+      "destination": "NAG",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 0,
+      "pickup_end_h": 12,
+      "deliver_by_h": 48.36888888888889,
+      "freight_inr": 47879,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L019",
+      "origin": "NAG",
+      "destination": "BLR",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 35,
+      "pickup_end_h": 47,
+      "deliver_by_h": 107.67555555555556,
+      "freight_inr": 78026,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L020",
+      "origin": "BLR",
+      "destination": "NSK",
+      "commodity": "Demo cargo",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 100,
+      "pickup_end_h": 112,
+      "deliver_by_h": 168,
+      "freight_inr": 74302,
+      "cargo_value_inr": 1800000,
+      "source": "broker",
+      "eway_bill": null
+    }
+  ]
+}
