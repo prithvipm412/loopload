@@ -13,17 +13,19 @@ VIEWPORT = {'width': 1440, 'height': 900}
 
 # Test IDs are preferred; accessible names and visible text are fallbacks.
 TARGETS = {
-    'map': ('map-ready', ('region', r'(freight|india|trip).*map|map'), None),
-    'baseline': ('baseline-button', ('button', r'^baseline$'), r'^baseline$'),
+    'map': (None, ('region', r'(freight|india|trip).*map|map'), None),
+    'baseline': (None, ('button', r'^baseline$'), r'^baseline$'),
     'ai': ('ai-plan-button', ('button', r'^AI Plan$'), r'^AI Plan$'),
-    'truck': ('truck-T01', ('button', r'\bT01\b'), r'\bT01\b'),
+    'truck': ('truck-row-T01', ('button', r'\bT01\b'), r'\bT01\b'),
     'drawer': ('truck-drawer', ('dialog', r'T01|truck'), None),
     'close': ('truck-drawer-close', ('button', r'close( truck)?( drawer)?|dismiss'), r'^close$'),
     'cancel': ('cancel-load-button', ('button', r'Simulate:\s*cancel a load'), r'Simulate:\s*cancel a load'),
-    'forecast': ('forecast-page', ('heading', r'forecast|demand'), r'forecast|hot lanes'),
-    'driver': ('driver-page', ('heading', r'T01|driver'), r'\bT01\b'),
+    'toast': ('replan-toast', ('status', r'replan|cancel|plan'), r'replanned|replanning|load cancelled'),
+    'forecast_nav': ('nav-forecast', ('link', r'forecast'), r'^forecast$'),
+    'forecast': ('hot-lanes-list', ('heading', r'forecast|demand'), r'forecast|hot lanes'),
+    'driver': ('driver-phone', ('heading', r'T01|driver'), r'\bT01\b'),
     'kannada': ('lang-kn', ('button', r'ಕನ್ನಡ|Kannada|^KN$'), r'ಕನ್ನಡ|Kannada|^KN$'),
-    'language': ('language-select', ('combobox', r'language|ಭಾಷೆ'), None),
+    'language': (None, ('combobox', r'language|ಭಾಷೆ'), None),
 }
 
 
@@ -42,7 +44,8 @@ def safe(label, action):
 
 def candidates(page, key):
     test_id, role, text = TARGETS[key]
-    yield f'data-testid={test_id}', page.get_by_test_id(test_id)
+    if test_id:
+        yield f'data-testid={test_id}', page.get_by_test_id(test_id)
     if role:
         yield f'role={role[0]} name=/{role[1]}/', page.get_by_role(role[0], name=re.compile(role[1], re.I))
     if text:
@@ -69,7 +72,7 @@ def locate(page, key, timeout=4000, attached=False):
             except Exception:
                 continue
         if time.monotonic() >= deadline:
-            log(f'MISSING {key}: data-testid={TARGETS[key][0]}; continuing')
+            log(f'MISSING {key}: ' + (f'data-testid={TARGETS[key][0]}' if TARGETS[key][0] else 'accessible/text/canvas fallbacks') + '; continuing')
             return None
         page.wait_for_timeout(150)
 
@@ -111,7 +114,7 @@ def reset_demo(api_url):
 
 def dry_run(page, base_url):
     """Navigate only: no reset, clicks, dropdown selection, video, or screenshots."""
-    for route, keys in [('/', ('map','baseline','ai','truck','drawer','close','cancel')),
+    for route, keys in [('/', ('map','baseline','ai','truck','drawer','close','cancel','toast','forecast_nav')),
                         ('/forecast', ('forecast',)),
                         ('/driver/T01', ('driver','kannada','language'))]:
         log(f'\nDRY RUN {base_url + route}')
@@ -119,21 +122,22 @@ def dry_run(page, base_url):
         for key in keys:
             safe(f'check {key}', lambda key=key: locate(page, key, timeout=1500))
     log('Dry run complete. Drawer controls may be absent because dry run never opens the drawer.')
-    log('Kannada may be available through lang-kn OR language-select; both are inspected.')
+    log('replan-toast may be absent because dry run never triggers cancellation.')
+    log('Kannada uses lang-kn, with an accessible native language select as fallback.')
 
 
 def wait_for_map(page):
-    try:
-        page.get_by_test_id('map-ready').wait_for(state='visible', timeout=30000)
-        log('FOUND map-ready: map and baseline data loaded')
-    except Exception:
-        log('WARN map-ready missing; checking visible canvas as a best-effort fallback')
-        locate(page, 'map', timeout=10000)
+    canvas = page.locator('.maplibregl-canvas, .mapboxgl-canvas, canvas').first
+    canvas.wait_for(state='visible', timeout=30000)
+    # No frontend map-ready test ID is provided: wait for rendering and quiet requests.
+    page.wait_for_function("""() => [...document.querySelectorAll('canvas')]
+        .some(canvas => canvas.width > 0 && canvas.height > 0)""", timeout=10000)
+    safe('wait for map requests to settle', lambda: page.wait_for_load_state('networkidle', timeout=10000))
+    log('FOUND visible map canvas; rendered map readiness is best effort')
 
 
 def tour(page, base_url):
     safe('open home', lambda: navigate(page, base_url + '/'))
-    # Test ID map-ready should become visible only after the map and initial data load.
     safe('wait for map', lambda: wait_for_map(page))
     safe('select Baseline', lambda: click(page, 'baseline'))
     pause(page, 3)
@@ -153,11 +157,15 @@ def tour(page, base_url):
     safe('wait for drawer close', lambda: page.get_by_test_id('truck-drawer').wait_for(state='hidden', timeout=5000))
     screenshot(page, '04_drawer_closed')
 
-    safe('simulate cancel a load (optional)', lambda: click(page, 'cancel'))
+    cancelled = safe('simulate cancel a load (optional)', lambda: click(page, 'cancel'))
+    if cancelled:
+        safe('wait for replan toast', lambda: locate(page, 'toast'))
     pause(page, 4)
     screenshot(page, '05_cancel_load')
 
-    safe('open forecast', lambda: navigate(page, base_url + '/forecast'))
+    opened = safe('click forecast navigation', lambda: click(page, 'forecast_nav'))
+    if not opened:
+        safe('open forecast directly', lambda: navigate(page, base_url + '/forecast'))
     safe('wait for forecast', lambda: locate(page, 'forecast'))
     pause(page, 4)
     screenshot(page, '06_forecast')

@@ -93,22 +93,23 @@ browser context before saving, as required by
 
 ## Frontend selector contract
 
-Add these `data-testid` attributes; use one instance per visible control:
+The recorder uses exactly the frontend-provided `data-testid` names:
 
 | Test ID | Element / behavior |
 | --- | --- |
-| `map-ready` | Visible readiness indicator, rendered only after map load and initial baseline data are ready. |
-| `baseline-button` | Clickable Baseline view control. |
 | `ai-plan-button` | Clickable AI Plan button. |
-| `truck-T01` | Clickable DOM button or list row opening T01, even if truck markers are rendered on canvas. |
+| `truck-row-T01` | Clickable T01 row opening the truck drawer. |
 | `truck-drawer` | T01 drawer container, visible while open. |
 | `truck-drawer-close` | Close button inside the drawer. |
 | `cancel-load-button` | Optional “Simulate: cancel a load” button. |
-| `forecast-page` | Forecast view root, visible once forecast content is loaded. |
-| `driver-page` | Driver view root, visible once T01 content is loaded. |
+| `replan-toast` | Replanning notification after cancellation; may be absent in dry run. |
+| `nav-forecast` | Forecast navigation link or button. |
+| `hot-lanes-list` | Forecast hot-lanes list, visible when content loads. |
+| `driver-phone` | Driver phone view containing T01 content. |
 | `lang-kn` | Clickable Kannada language button. |
-| `language-select` | Alternative native `<select>` for language; Kannada option has `value="kn"`. |
 
-Provide either `lang-kn` or `language-select`; both are supported. Accessible
-button names, visible text, and the map canvas are fallback selectors. A canvas
-being visible cannot confirm map tile/data readiness, so prefer `map-ready`.
+Baseline selection and language dropdown fallback use accessible names and
+visible text without requesting extra test IDs. Map loading uses a visible,
+nonzero-sized canvas and waits for requests to settle; this is best effort and
+cannot independently confirm all map tiles have loaded. Forecast navigation
+prefers `nav-forecast` and falls back to opening `/forecast` directly.
