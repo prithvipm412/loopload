@@ -38,6 +38,22 @@ def test_plan_baseline_shape(client):
             assert leg["kind"] in ("loaded", "empty")
 
 
+def test_plan_baseline_paths_and_compliance_filled(client):
+    try:
+        import data.distance  # noqa: F401
+        import engine.compliance  # noqa: F401
+    except ImportError:
+        pytest.skip("distance/compliance not merged yet; path/compliance stay unfilled")
+    r = client.post("/api/plan", json={"mode": "baseline"})
+    plan = r.json()
+    legs = [leg for tp in plan["trucks"] for leg in tp["legs"]]
+    assert legs, "baseline produced no legs to check"
+    for leg in legs:
+        assert len(leg["path"]) >= 2
+        assert leg["path"][0] != leg["path"][-1]
+        assert "ok" in leg["compliance"]
+
+
 def test_plan_ai_returns_503_until_optimizer_merged(client):
     try:
         import engine.optimizer  # noqa: F401
@@ -107,6 +123,29 @@ def test_forecast_503_until_merged(client):
     assert r.status_code == 503
 
 
+def test_forecast_shape_once_merged(client):
+    try:
+        import forecast.forecaster  # noqa: F401
+    except ImportError:
+        pytest.skip("forecaster not merged yet")
+    r = client.get("/api/forecast")
+    assert r.status_code == 200
+    body = r.json()
+    assert isinstance(body, list) and body
+    assert {"lane", "origin", "destination", "history", "forecast", "change_pct"} <= body[0].keys()
+
+
+def test_forecast_filters_by_lane(client):
+    try:
+        import forecast.forecaster  # noqa: F401
+    except ImportError:
+        pytest.skip("forecaster not merged yet")
+    lane = client.get("/api/forecast").json()[0]["lane"]
+    r = client.get(f"/api/forecast?lane={lane}")
+    assert r.status_code == 200
+    assert all(f["lane"] == lane for f in r.json())
+
+
 def test_hot_lanes_503_until_merged(client):
     try:
         import forecast.forecaster  # noqa: F401
@@ -115,6 +154,16 @@ def test_hot_lanes_503_until_merged(client):
         pass
     r = client.get("/api/hot-lanes")
     assert r.status_code == 503
+
+
+def test_hot_lanes_shape_once_merged(client):
+    try:
+        import forecast.forecaster  # noqa: F401
+    except ImportError:
+        pytest.skip("forecaster not merged yet")
+    r = client.get("/api/hot-lanes?n=3")
+    assert r.status_code == 200
+    assert len(r.json()) <= 3
 
 
 def test_compliance_503_until_merged(client):
@@ -131,6 +180,18 @@ def test_compliance_503_until_merged(client):
 def test_compliance_unknown_load_404(client):
     r = client.get("/api/compliance/NOPE")
     assert r.status_code == 404
+
+
+def test_compliance_shape_once_merged(client):
+    try:
+        import engine.compliance  # noqa: F401
+    except ImportError:
+        pytest.skip("compliance not merged yet")
+    load_id = STATE["scenario"]["loads"][0]["id"]
+    r = client.get(f"/api/compliance/{load_id}")
+    assert r.status_code == 200
+    body = r.json()
+    assert "ok" in body and "issues" in body
 
 
 def test_replan_503_until_merged(client):
