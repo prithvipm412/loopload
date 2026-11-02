@@ -1,4 +1,3 @@
-import copy
 import json
 from pathlib import Path
 
@@ -157,3 +156,17 @@ def test_forecast_loads():
         assert 0<=load['probability']<=1
     shifted=forecast_loads(336)
     assert shifted[0]['pickup_start_h']==loads[0]['pickup_start_h']+168
+
+
+def test_committed_path_cache_covers_demo():
+    cities=json.loads((distance.DATA/'cities.json').read_text())
+    matrix=distance.get_matrix(cities)
+    paths=json.loads((distance.DATA/'paths.json').read_text())
+    scenario=json.loads((distance.DATA/'scenario.json').read_text())
+    pairs={(l['origin'],l['destination']) for l in scenario['loads']}
+    pairs.update((a,b) for i,a in enumerate(matrix['cities']) for j,b in enumerate(matrix['cities'])
+                 if a!=b and matrix['distance_km'][i][j]<=1500)
+    for a,b in pairs:
+        points=paths[f'{a}-{b}']
+        assert 2<=len(points)<=60
+        assert all(len(p)==2 and -180<=p[0]<=180 and -90<=p[1]<=90 for p in points)

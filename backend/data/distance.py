@@ -55,7 +55,9 @@ def get_matrix(cities: list[dict]) -> dict:
         result = _request(f'{OSRM}/table/v1/driving/{_coordinates(cities)}?annotations=distance,duration')
         distances = [[round(v / 1000, 1) for v in row] for row in result['distances']]
         durations = [[round(v / 3600, 3) for v in row] for row in result['durations']]
-        if len(distances) != len(ids) or any(len(r) != len(ids) for r in distances + durations):
+        if (len(distances) != len(ids) or len(durations) != len(ids)
+                or any(len(r) != len(ids) for r in distances + durations)
+                or any(not math.isfinite(v) or v < 0 for row in distances + durations for v in row)):
             raise ValueError('Invalid table dimensions')
         source = 'osrm'
     except Exception:
