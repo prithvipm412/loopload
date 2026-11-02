@@ -53,6 +53,7 @@ import { money, num, compact, dayTime } from "./format";
 import RouteMap from "./RouteMap";
 import { i18n, type Language } from "./i18n";
 import "./styles.css";
+const PLAN_TRANSITION_SECONDS = 0.9;
 function Counter({
   value,
   format = num,
@@ -61,10 +62,16 @@ function Counter({
   format?: (v: number) => string;
 }) {
   const [v, setV] = useState(value);
-  const prev = useRef(value);
+  const current = useRef(value);
   useEffect(() => {
-    const c = animate(prev.current, value, { duration: 0.9, onUpdate: setV });
-    prev.current = value;
+    const c = animate(current.current, value, {
+      duration: PLAN_TRANSITION_SECONDS,
+      ease: "easeInOut",
+      onUpdate: (next) => {
+        current.current = next;
+        setV(next);
+      },
+    });
     return () => c.stop();
   }, [value]);
   return <>{format(v)}</>;
@@ -228,19 +235,25 @@ function Dashboard({
   }, [playing, speed]);
   const switchPlan = (next: "baseline" | "ai") => {
     if (next === mode) return;
+    const target = next === "baseline" ? baseline : aiPlan;
+    // Reversing an in-flight switch preserves the visible mixture.
+    const start =
+      previous?.plan_id === target.plan_id && blend < 1 ? 1 - blend : 0;
     setPrevious(plan);
-    setBlend(0);
+    setBlend(start);
     setMode(next);
   };
   useEffect(() => {
-    if (blend !== 0) return;
-    const c = animate(0, 1, {
-      duration: 0.9,
+    if (!previous) return;
+    const c = animate(blend, 1, {
+      duration: PLAN_TRANSITION_SECONDS * (1 - blend),
+      ease: "easeInOut",
       onUpdate: setBlend,
       onComplete: () => setPrevious(undefined),
     });
     return () => c.stop();
-  }, [mode]);
+    // Start once per destination plan; animation frames must not restart it.
+  }, [plan]);
   const replan = async () => {
     const leg = aiPlan.trucks
       .find((t) => t.truck_id === "T01")
@@ -271,12 +284,6 @@ function Dashboard({
       setBlend(0);
       setAiPlan(next);
       setMode("ai");
-      const c = animate(0, 1, {
-        duration: 0.9,
-        onUpdate: setBlend,
-        onComplete: () => setPrevious(undefined),
-      });
-      void c;
       setChanged(ids);
       notify(
         `Re-planned in ${num(next.solve_time_s, 1)} s · ${ids.length} truck${ids.length === 1 ? "" : "s"} updated`,

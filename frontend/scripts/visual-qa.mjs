@@ -29,21 +29,19 @@ async function ready() {
     null,
     { timeout: 15000 },
   );
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(1800);
   if (
     await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)
   )
     throw Error("Horizontal overflow");
 }
 async function withinViewport(selectors) {
-  const boxes = await page
-    .locator(selectors)
-    .evaluateAll((nodes) =>
-      nodes.map((n) => ({
-        name: n.className,
-        rect: n.getBoundingClientRect().toJSON(),
-      })),
-    );
+  const boxes = await page.locator(selectors).evaluateAll((nodes) =>
+    nodes.map((n) => ({
+      name: n.className,
+      rect: n.getBoundingClientRect().toJSON(),
+    })),
+  );
   for (const { name, rect } of boxes)
     if (rect.left < 0 || rect.top < 0 || rect.right > 1440 || rect.bottom > 900)
       throw Error(`${name} extends outside the 1440×900 viewport`);

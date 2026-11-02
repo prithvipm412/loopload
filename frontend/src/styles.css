@@ -1765,3 +1765,24 @@ select {
   background: #f9e4df;
   color: #994d43;
 }
+/* Reserve the same geometry while the plan, badges and digits animate. */
+.metric > strong {
+  white-space: nowrap;
+  min-height: 1.15em;
+}
+.truck-row {
+  display: grid;
+  grid-template-columns: 29px minmax(0, 1fr) 36px 14px;
+}
+.truck-info {
+  min-width: 0;
+}
+.truck-row > span:nth-last-child(2) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 1101px) {
+  .map-story {
+    min-height: 110px;
+  }
+}

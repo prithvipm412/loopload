@@ -8,10 +8,7 @@ import {
 } from "@deck.gl/layers";
 import { TripsLayer } from "@deck.gl/geo-layers";
 import type { PathStyleExtensionProps } from "@deck.gl/extensions";
-import {
-  CollisionFilterExtension,
-  PathStyleExtension,
-} from "@deck.gl/extensions";
+import { PathStyleExtension } from "@deck.gl/extensions";
 import { Map } from "react-map-gl/maplibre";
 import {
   WebMercatorViewport,
@@ -32,6 +29,38 @@ interface Props {
   onSelect: (id: string) => void;
   hot?: Forecast[];
   mini?: boolean;
+}
+type LegGroups = { loaded: Leg[]; empty: Leg[] };
+type TruckPosition = { truck_id: string; position: [number, number] };
+function splitLegs(legs: Leg[]): LegGroups {
+  return {
+    loaded: legs.filter((l) => l.kind === "loaded"),
+    empty: legs.filter((l) => l.kind === "empty"),
+  };
+}
+function truckPositions(legs: Leg[], time: number): TruckPosition[] {
+  return legs
+    .filter(
+      (l) =>
+        l.path.length >= 2 &&
+        l.arrive_h > l.depart_h &&
+        time >= l.depart_h &&
+        time <= l.arrive_h,
+    )
+    .map((l) => {
+      const f =
+        ((time - l.depart_h) / (l.arrive_h - l.depart_h)) * (l.path.length - 1);
+      const i = Math.min(l.path.length - 2, Math.floor(f));
+      const a = l.path[i],
+        b = l.path[i + 1];
+      return {
+        truck_id: l.truck_id,
+        position: [
+          a[0] + (b[0] - a[0]) * (f - i),
+          a[1] + (b[1] - a[1]) * (f - i),
+        ],
+      };
+    });
 }
 export default function RouteMap({
   scenario,
@@ -118,16 +147,39 @@ export default function RouteMap({
         return true;
       });
   }, [scenario, plan, mini, viewState, size]);
+  // Keep geometry references stable while only opacity changes on each frame.
+  const currentLegs = useMemo(() => plan.trucks.flatMap((t) => t.legs), [plan]);
+  const oldLegs = useMemo(
+    () => previous?.trucks.flatMap((t) => t.legs) ?? [],
+    [previous],
+  );
+  const currentGroups = useMemo(() => splitLegs(currentLegs), [currentLegs]);
+  const oldGroups = useMemo(() => splitLegs(oldLegs), [oldLegs]);
+  const positions = useMemo(
+    () => truckPositions(currentLegs, time),
+    [currentLegs, time],
+  );
+  const oldPositions = useMemo(
+    () => truckPositions(oldLegs, time),
+    [oldLegs, time],
+  );
+  const dots = useMemo(
+    () =>
+      mini
+        ? scenario.cities.filter((c) =>
+            currentLegs.some((l) => l.from === c.id || l.to === c.id),
+          )
+        : scenario.cities,
+    [scenario, currentLegs, mini],
+  );
   const city = (id: string) => scenario.cities.find((c) => c.id === id)!;
   const layers = useMemo(() => {
-    const routeLayers = (p: Plan, opacity: number, suffix: string) =>
-      ["loaded", "empty"].map(
+    const routeLayers = (groups: LegGroups, opacity: number, suffix: string) =>
+      (["loaded", "empty"] as const).map(
         (kind) =>
           new PathLayer<Leg, PathStyleExtensionProps<Leg>>({
             id: `${suffix}-${kind}`,
-            data: p.trucks
-              .flatMap((t) => t.legs)
-              .filter((l) => l.kind === kind),
+            data: groups[kind],
             getPath: (l) => l.path,
             getColor: (l) =>
               [
@@ -155,31 +207,10 @@ export default function RouteMap({
             },
           }),
       );
-    const positions = plan.trucks.flatMap((t) =>
-      t.legs
-        .filter((l) => time >= l.depart_h && time <= l.arrive_h)
-        .map((l) => {
-          const f =
-            ((time - l.depart_h) / (l.arrive_h - l.depart_h)) *
-            (l.path.length - 1);
-          const i = Math.min(l.path.length - 2, Math.floor(f));
-          const a = l.path[i],
-            b = l.path[i + 1];
-          return {
-            truck_id: t.truck_id,
-            position: [
-              a[0] + (b[0] - a[0]) * (f - i),
-              a[1] + (b[1] - a[1]) * (f - i),
-            ],
-          };
-        }),
-    );
-    return [
-      ...(previous ? routeLayers(previous, 1 - blend, "old") : []),
-      ...routeLayers(plan, blend, "current"),
+    const trips = (data: Leg[], opacity: number, suffix: string) =>
       new TripsLayer<Leg>({
-        id: "trips",
-        data: plan.trucks.flatMap((t) => t.legs),
+        id: `trips-${suffix}`,
+        data,
         getPath: (l) => l.path,
         getTimestamps: (l) =>
           l.path.map(
@@ -191,8 +222,28 @@ export default function RouteMap({
         widthMinPixels: 5,
         trailLength: 6,
         currentTime: time,
-        opacity: 0.95,
-      }),
+        opacity: 0.95 * opacity,
+      });
+    const markers = (data: TruckPosition[], opacity: number, suffix: string) =>
+      new ScatterplotLayer<TruckPosition>({
+        id: `trucks-${suffix}`,
+        data,
+        getPosition: (d) => d.position,
+        getRadius: 7,
+        radiusUnits: "pixels",
+        getFillColor: [169, 155, 224],
+        stroked: true,
+        getLineColor: [255, 253, 249],
+        lineWidthMinPixels: 2,
+        opacity,
+        pickable: opacity > 0.5,
+        onClick: (info) => info.object && onSelect(info.object.truck_id),
+      });
+    return [
+      ...(previous ? routeLayers(oldGroups, 1 - blend, "old") : []),
+      ...routeLayers(currentGroups, blend, "current"),
+      ...(previous ? [trips(oldLegs, 1 - blend, "old")] : []),
+      trips(currentLegs, blend, "current"),
       ...(hot
         ? [
             new ArcLayer<Forecast>({
@@ -215,13 +266,7 @@ export default function RouteMap({
         : []),
       new ScatterplotLayer({
         id: "cities",
-        data: mini
-          ? scenario.cities.filter((c) =>
-              plan.trucks.some((t) =>
-                t.legs.some((l) => l.from === c.id || l.to === c.id),
-              ),
-            )
-          : scenario.cities,
+        data: dots,
         getPosition: (c) => [c.lon, c.lat],
         getRadius: mini ? 3 : 4,
         radiusUnits: "pixels",
@@ -244,22 +289,11 @@ export default function RouteMap({
         fontWeight: 500,
         fontFamily: "Inter, sans-serif",
         getTextAnchor: "middle",
-        outlineWidth: 1,
+        outlineWidth: 0.12,
         outlineColor: [250, 247, 242, 230],
       }),
-      new ScatterplotLayer({
-        id: "trucks",
-        data: positions,
-        getPosition: (d) => d.position,
-        getRadius: 7,
-        radiusUnits: "pixels",
-        getFillColor: [169, 155, 224],
-        stroked: true,
-        getLineColor: [255, 253, 249],
-        lineWidthMinPixels: 2,
-        pickable: true,
-        onClick: (info) => info.object && onSelect(info.object.truck_id),
-      }),
+      ...(previous ? [markers(oldPositions, 1 - blend, "old")] : []),
+      markers(positions, blend, "current"),
     ];
   }, [
     scenario,
@@ -273,11 +307,20 @@ export default function RouteMap({
     hot,
     mini,
     labelCities,
+    currentGroups,
+    oldGroups,
+    currentLegs,
+    oldLegs,
+    positions,
+    oldPositions,
+    dots,
   ]);
   return (
     <div
       ref={mapRoot}
       data-testid="map-canvas"
+      data-transition-progress={blend.toFixed(4)}
+      data-transitioning={Boolean(previous)}
       data-basemap-status={
         mapFailed ? "unavailable" : mapReady ? "ready" : "loading"
       }
