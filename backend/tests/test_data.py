@@ -142,3 +142,18 @@ def test_history_determinism_and_seasonal_naive(tmp_path,monkeypatch):
     assert len(forecast[0]['forecast'])==2
     assert forecast[0]['forecast'][0]['loads']==forecast[0]['history'][-52]['loads']
     assert forecaster.forecast_lanes(2)==forecast
+
+
+def test_forecast_loads():
+    from forecast.forecaster import forecast_loads
+    loads=forecast_loads()
+    assert loads==forecast_loads()
+    assert 10<=len(loads)<=15
+    assert len({l['id'] for l in loads})==len(loads)
+    allowed={(l['origin'],l['destination'],l['commodity'],l['truck_type']) for l in seasonal_lanes()}
+    for load in loads:
+        assert tuple(load[k] for k in ('origin','destination','commodity','truck_type')) in allowed
+        assert 168<=load['pickup_start_h']<load['pickup_end_h']<load['deliver_by_h']<=336
+        assert 0<=load['probability']<=1
+    shifted=forecast_loads(336)
+    assert shifted[0]['pickup_start_h']==loads[0]['pickup_start_h']+168

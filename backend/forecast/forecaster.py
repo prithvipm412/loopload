@@ -115,3 +115,48 @@ def forecast_lanes(weeks_ahead: int = 4) -> list[dict]:
 
 def hot_lanes(n: int = 8) -> list[dict]:
     return sorted(forecast_lanes(),key=lambda f:(-f['forecast'][0]['loads'],-f['change_pct'],f['lane']))[:max(0,n)]
+
+
+def forecast_loads(week_start_h: float = 168) -> list[dict]:
+    """Twelve optional next-week loads; probability is a demo assumption.
+
+    These are demand projections, separate from the committed current-week
+    scenario. IDs and all generated fields are deterministic for a given cache.
+    """
+    from app.config import elapsed_h
+    from data.distance import DATA as CITY_DATA, get_matrix
+    from data.generator import VALUES
+    if week_start_h<0:
+        raise ValueError('week_start_h must be nonnegative')
+    cities=json.loads((CITY_DATA/'cities.json').read_text())
+    scenario=json.loads((CITY_DATA/'scenario.json').read_text())
+    matrix=get_matrix(cities)
+    index={c:i for i,c in enumerate(matrix['cities'])}
+    lanes={l['lane']:l for l in _lanes()}
+    rng=random.Random(42)
+    loads=[]
+    for forecast in hot_lanes(6):
+        lane=lanes[forecast['lane']]
+        a,b=lane['origin'],lane['destination']
+        distance=matrix['distance_km'][index[a]][index[b]]
+        travel=elapsed_h(matrix['duration_h'][index[a]][index[b]])
+        point=forecast['forecast'][0]
+        probability=round(max(.55,min(.95,1-(point['upper']-point['lower'])/(4*max(1,point['loads'])))),2)
+        candidates=[t for t in scenario['trucks'] if t['type']==lane['truck_type']]
+        reg=candidates[0]['reg_no'] if candidates else scenario['trucks'][0]['reg_no']
+        for offset in (8,48):
+            start=week_start_h+offset
+            end=start+12
+            low,high=VALUES[lane['commodity']]
+            li=len(loads)+1
+            loads.append(dict(id=f'F{li:03d}',origin=a,destination=b,commodity=lane['commodity'],
+                              weight_t=round(rng.uniform(6,9),1),truck_type=lane['truck_type'],
+                              pickup_start_h=start,pickup_end_h=end,
+                              deliver_by_h=round(min(week_start_h+168,end+travel+3+24),2),
+                              freight_inr=int(round(distance*rng.uniform(38,55)/100)*100),
+                              cargo_value_inr=int(round(rng.uniform(low,high)/1000)*1000),
+                              source='broker',probability=probability,
+                              eway_bill=dict(number=f'EWB{2000000000+li}',
+                                             valid_until_h=start+max(1,math.ceil(distance/200))*24,
+                                             vehicle_reg=reg)))
+    return loads
