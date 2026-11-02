@@ -1,6 +1,6 @@
 # Master prompt: Codex 3 (FRONTEND)
 
-You are building the **demo UI** for LoopLoad, shown live to judges at an Ideathon tomorrow morning. It's an AI planner that turns one-off truck trips into week-long loaded loops across India. The UI is the "wow": an India map where **red dashed empty legs turn into solid green loaded legs** when you press **AI Plan**, while impact counters drop.
+You are building the **demo UI** for LoopLoad, shown live to judges at an Ideathon tomorrow morning. It's an AI planner that turns one-off truck trips into week-long loaded loops across India. The UI is the "wow": an India map where **coral dashed empty legs turn into solid sage-green loaded legs** when you press **AI Plan**, while impact counters drop.
 
 **Read first:** `AGENTS.md`, `docs/CONTRACT.md` (JSON shapes in §4, API in §7) and `docs/FEATURES.md` (section F and the demo script).
 
@@ -13,18 +13,27 @@ You work in `~/Projects/loopload-cx3` on branch `feat/frontend`.
 
 - Vite + React 18 + TypeScript, created inside `frontend/`.
 - Tailwind CSS, framer-motion and lucide-react icons.
-- `deck.gl` (`@deck.gl/react`, `@deck.gl/layers`, `@deck.gl/geo-layers`, `@deck.gl/extensions`) with `react-map-gl/maplibre` and `maplibre-gl`. The basemap is CARTO dark matter (`https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json`), so **no API token is needed**.
+- `deck.gl` (`@deck.gl/react`, `@deck.gl/layers`, `@deck.gl/geo-layers`, `@deck.gl/extensions`) with `react-map-gl/maplibre` and `maplibre-gl`. The basemap is CARTO Positron, a light map (`https://basemaps.cartocdn.com/gl/positron-gl-style/style.json`), so **no API token is needed**. Tint it warm with a beige overlay, or lower its saturation, so it blends with the off-white UI.
 - Recharts for charts and react-router for pages.
 - `src/api.ts` has typed fetchers for every endpoint. If `import.meta.env.VITE_USE_MOCKS === "true"`, it returns data from `src/mocks/*.json` instead. **Default to mocks until CC confirms the backend is up.** `VITE_API_URL` defaults to `http://localhost:8000`.
 - `src/types.ts` holds TypeScript types that mirror CONTRACT §4 exactly.
 
-## Visual direction
+## Visual direction (light, warm, pastel; NOT dark or navy)
 
-- Deep navy theme: background `#0A1230`, panels `#111C44` with 1px `#22306B` borders, text `#E6EAFF`, muted `#8A94C6`.
-- Loaded legs are green `#22C55E`, empty legs are red `#EF4444` (dashed), hot lanes are amber `#F59E0B`, and the accent is `#6C7BFF`.
-- Font: Inter. Rounded-2xl panels, soft shadows, generous spacing.
-- **Smooth animations everywhere:** counters tween (framer-motion `animate` on numbers), legs fade and morph on plan switch, and panels slide in.
-- It must look polished on a 1440×900 projector. Don't use emoji. Keep it clean and confident, like a real startup product.
+- **Base:** off-white page `#FAF7F2`, beige panels `#F3EDE3`, cards `#FFFDF9` with 1px `#E6DCCB` borders, text `#2E2A24`, muted text `#7A7064`.
+- **Pastel accents, used sparingly:**
+  - sage green `#7FBF9A` for loaded legs and "better" chips
+  - soft coral `#E8857A` for empty legs (dashed) and "worse" chips
+  - peach `#F4B183` for hot lanes and forecast arcs
+  - lavender `#A99BE0` as the primary accent (AI Plan button, active toggle)
+  - sky blue `#9CCBE8` for charts and the timeline
+  - butter yellow `#F3D98B` for compliance warnings
+- **Contrast:** lines on the map must stay clearly visible on the light basemap. Use 3–4 px widths and slightly deeper strokes (sage `#5FA67F`, coral `#D9695E`) if the pastels look washed out.
+- **Buttons:** the AI Plan button is lavender with dark text `#2E2A24`, has a soft shadow, and gets a gentle glow and pulse before it's first clicked.
+- **Charts:** Recharts on cards, with pastel fills, thin grid lines `#EDE5D8` and no heavy borders.
+- **Type:** Inter (or "DM Sans" for headings). Large friendly numbers, rounded-2xl cards, soft shadows (`0 4px 20px rgba(120,100,70,0.08)`), generous spacing.
+- **Smooth animations everywhere:** counters tween (framer-motion), legs fade and morph on plan switch, and panels slide in.
+- It must look calm, premium and readable on a 1440×900 projector in a bright room. No emoji, no neon, no dark mode.
 
 ## P0-1: Mocks (first 20 min)
 
@@ -68,7 +77,7 @@ A right slide-over showing the truck's reg no, owner, type, capacity and driver.
 - **Forecast page (`/forecast`):** a hot-lanes list (lane, commodity, next-week loads, change %), a line chart of history + forecast with a confidence band (Recharts Area + Line), and the map with an `ArcLayer` for hot lanes in amber, with width scaled by loads.
 - **Re-plan:** a "Simulate: cancel a load" button on the dashboard. It picks a load on the hero truck, POSTs `/api/replan` with `{type:"cancel_load", load_id, at_h: currentTime}`, highlights `changed_trucks`, and shows the toast "Re-planned in X s".
 - **Pooling card:** shows Solo owners vs Pooled profit from `POST /api/plan {mode:"ai_solo"}` vs the AI plan, with an owner filter dropdown that dims the other owners' legs.
-- **Driver view (`/driver/:truckId`):** a phone frame (390×780) centred on a navy background. It shows the next pickup card, the cargo, a mini route map and the week list. Language toggle EN / हिंदी / ಕನ್ನಡ / தமிழ் uses a static `i18n.ts` dictionary covering every label on this screen.
+- **Driver view (`/driver/:truckId`):** a phone frame (390×780) centred on a beige background. It shows the next pickup card, the cargo, a mini route map and the week list. Language toggle EN / हिंदी / ಕನ್ನಡ / தமிழ் uses a static `i18n.ts` dictionary covering every label on this screen.
 
 ## Switching to the real API
 

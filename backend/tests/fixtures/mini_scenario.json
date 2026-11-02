@@ -1,0 +1,320 @@
+{
+  "week_start": "2026-11-09T00:00:00+05:30",
+  "cities": [
+    {
+      "id": "DEL",
+      "name": "Delhi",
+      "state": "Delhi",
+      "lat": 28.61,
+      "lon": 77.21
+    },
+    {
+      "id": "MUM",
+      "name": "Mumbai",
+      "state": "Maharashtra",
+      "lat": 19.08,
+      "lon": 72.88
+    },
+    {
+      "id": "BLR",
+      "name": "Bengaluru",
+      "state": "Karnataka",
+      "lat": 12.97,
+      "lon": 77.59
+    },
+    {
+      "id": "CHE",
+      "name": "Chennai",
+      "state": "Tamil Nadu",
+      "lat": 13.08,
+      "lon": 80.27
+    },
+    {
+      "id": "TPR",
+      "name": "Tiruppur",
+      "state": "Tamil Nadu",
+      "lat": 11.11,
+      "lon": 77.34
+    }
+  ],
+  "owners": [
+    {
+      "id": "O1",
+      "name": "Raju Transport",
+      "home_city": "TPR",
+      "trucks": [
+        "T01",
+        "T02"
+      ]
+    },
+    {
+      "id": "O2",
+      "name": "Singh Logistics",
+      "home_city": "DEL",
+      "trucks": [
+        "T03",
+        "T04"
+      ]
+    }
+  ],
+  "trucks": [
+    {
+      "id": "T01",
+      "owner_id": "O1",
+      "reg_no": "TN39AB1234",
+      "type": "open_body",
+      "capacity_t": 16,
+      "home_city": "TPR",
+      "start_city": "TPR",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Murugan",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T02",
+      "owner_id": "O1",
+      "reg_no": "TN39AC5678",
+      "type": "container",
+      "capacity_t": 20,
+      "home_city": "TPR",
+      "start_city": "TPR",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-03-31",
+      "driver": {
+        "name": "Selvam",
+        "language": "ta"
+      }
+    },
+    {
+      "id": "T03",
+      "owner_id": "O2",
+      "reg_no": "DL1CD9012",
+      "type": "open_body",
+      "capacity_t": 18,
+      "home_city": "DEL",
+      "start_city": "DEL",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2027-06-30",
+      "driver": {
+        "name": "Rakesh",
+        "language": "hi"
+      }
+    },
+    {
+      "id": "T04",
+      "owner_id": "O2",
+      "reg_no": "DL1CE3456",
+      "type": "container",
+      "capacity_t": 22,
+      "home_city": "DEL",
+      "start_city": "DEL",
+      "available_from_h": 0,
+      "national_permit_valid_until": "2026-12-31",
+      "driver": {
+        "name": "Suresh",
+        "language": "hi"
+      }
+    }
+  ],
+  "loads": [
+    {
+      "id": "L001",
+      "origin": "TPR",
+      "destination": "BLR",
+      "commodity": "Cotton bales",
+      "weight_t": 12,
+      "truck_type": "open_body",
+      "pickup_start_h": 2,
+      "pickup_end_h": 20,
+      "deliver_by_h": 40,
+      "freight_inr": 20000,
+      "cargo_value_inr": 700000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L002",
+      "origin": "BLR",
+      "destination": "CHE",
+      "commodity": "Marble",
+      "weight_t": 10,
+      "truck_type": "open_body",
+      "pickup_start_h": 10,
+      "pickup_end_h": 40,
+      "deliver_by_h": 60,
+      "freight_inr": 18000,
+      "cargo_value_inr": 600000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L003",
+      "origin": "CHE",
+      "destination": "TPR",
+      "commodity": "Textiles",
+      "weight_t": 8,
+      "truck_type": "open_body",
+      "pickup_start_h": 20,
+      "pickup_end_h": 60,
+      "deliver_by_h": 100,
+      "freight_inr": 22000,
+      "cargo_value_inr": 900000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1000000001",
+        "valid_until_h": 120,
+        "vehicle_reg": "TN39AB1234"
+      }
+    },
+    {
+      "id": "L004",
+      "origin": "TPR",
+      "destination": "MUM",
+      "commodity": "Textiles",
+      "weight_t": 14,
+      "truck_type": "container",
+      "pickup_start_h": 5,
+      "pickup_end_h": 30,
+      "deliver_by_h": 140,
+      "freight_inr": 70000,
+      "cargo_value_inr": 1600000,
+      "source": "broker",
+      "eway_bill": {
+        "number": "EWB1000000002",
+        "valid_until_h": 160,
+        "vehicle_reg": "TN39AC5678"
+      }
+    },
+    {
+      "id": "L005",
+      "origin": "MUM",
+      "destination": "DEL",
+      "commodity": "FMCG",
+      "weight_t": 16,
+      "truck_type": "container",
+      "pickup_start_h": 60,
+      "pickup_end_h": 100,
+      "deliver_by_h": 160,
+      "freight_inr": 90000,
+      "cargo_value_inr": 2500000,
+      "source": "shipper",
+      "eway_bill": {
+        "number": "EWB1000000003",
+        "valid_until_h": 180,
+        "vehicle_reg": "TN39AC5678"
+      }
+    },
+    {
+      "id": "L006",
+      "origin": "DEL",
+      "destination": "BLR",
+      "commodity": "Oranges",
+      "weight_t": 15,
+      "truck_type": "open_body",
+      "pickup_start_h": 2,
+      "pickup_end_h": 24,
+      "deliver_by_h": 150,
+      "freight_inr": 85000,
+      "cargo_value_inr": 1400000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L007",
+      "origin": "DEL",
+      "destination": "CHE",
+      "commodity": "Machinery",
+      "weight_t": 12,
+      "truck_type": "container",
+      "pickup_start_h": 3,
+      "pickup_end_h": 20,
+      "deliver_by_h": 150,
+      "freight_inr": 92000,
+      "cargo_value_inr": 2000000,
+      "source": "shipper",
+      "eway_bill": {
+        "number": "EWB1000000004",
+        "valid_until_h": 170,
+        "vehicle_reg": "DL1CE3456"
+      }
+    },
+    {
+      "id": "L008",
+      "origin": "BLR",
+      "destination": "MUM",
+      "commodity": "FMCG",
+      "weight_t": 15,
+      "truck_type": "container",
+      "pickup_start_h": 40,
+      "pickup_end_h": 60,
+      "deliver_by_h": 110,
+      "freight_inr": 66000,
+      "cargo_value_inr": 1900000,
+      "source": "shipper",
+      "eway_bill": null
+    },
+    {
+      "id": "L009",
+      "origin": "MUM",
+      "destination": "TPR",
+      "commodity": "Steel",
+      "weight_t": 30,
+      "truck_type": "open_body",
+      "pickup_start_h": 10,
+      "pickup_end_h": 50,
+      "deliver_by_h": 140,
+      "freight_inr": 70000,
+      "cargo_value_inr": 1500000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L010",
+      "origin": "CHE",
+      "destination": "DEL",
+      "commodity": "Pharma",
+      "weight_t": 10,
+      "truck_type": "reefer",
+      "pickup_start_h": 10,
+      "pickup_end_h": 50,
+      "deliver_by_h": 150,
+      "freight_inr": 95000,
+      "cargo_value_inr": 2100000,
+      "source": "shipper",
+      "eway_bill": null
+    },
+    {
+      "id": "L011",
+      "origin": "BLR",
+      "destination": "DEL",
+      "commodity": "Marble",
+      "weight_t": 11,
+      "truck_type": "open_body",
+      "pickup_start_h": 1,
+      "pickup_end_h": 3,
+      "deliver_by_h": 150,
+      "freight_inr": 58000,
+      "cargo_value_inr": 1200000,
+      "source": "broker",
+      "eway_bill": null
+    },
+    {
+      "id": "L012",
+      "origin": "DEL",
+      "destination": "MUM",
+      "commodity": "FMCG",
+      "weight_t": 13,
+      "truck_type": "open_body",
+      "pickup_start_h": 2,
+      "pickup_end_h": 24,
+      "deliver_by_h": 10,
+      "freight_inr": 66000,
+      "cargo_value_inr": 1300000,
+      "source": "shipper",
+      "eway_bill": null
+    }
+  ]
+}
