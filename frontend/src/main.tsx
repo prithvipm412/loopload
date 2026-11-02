@@ -379,7 +379,12 @@ function Dashboard({
           </button>
         </div>
       </section>
-      <div className="dashboard-grid">
+      <motion.div
+        className="dashboard-grid"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+      >
         <div className="map-column">
           <section className="map-panel">
             <div className="map-title">
@@ -529,12 +534,20 @@ function Dashboard({
                   <strong>
                     <Counter value={m.value} format={m.format} />
                   </strong>
-                  <small className={better ? "delta good" : "delta"}>
+                  <small
+                    className={
+                      delta === 0
+                        ? "delta"
+                        : better
+                          ? "delta good"
+                          : "delta bad"
+                    }
+                  >
                     {delta === 0 ? (
                       "Baseline reference"
                     ) : (
                       <>
-                        {better ? (
+                        {delta < 0 ? (
                           <ArrowDownRight size={11} />
                         ) : (
                           <ArrowUpRight size={11} />
@@ -585,7 +598,7 @@ function Dashboard({
             })}
           </div>
         </aside>
-      </div>
+      </motion.div>
       <Pooling
         scenario={scenario}
         ai={aiPlan}

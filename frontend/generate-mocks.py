@@ -18,7 +18,7 @@ for mode in ['baseline','ai']:
   legs=[]; t=3.
   for j,(a,b) in enumerate(zip(r,r[1:])):
    x,y=lookup[a],lookup[b];dist=round(math.hypot((x['lon']-y['lon'])*100,(x['lat']-y['lat'])*111)*1.18,1)
-   empty=((j==3 or (j==2 and i in [0,2,4])) if mode=='baseline' else (j==3 and i in [0,1,3,5,7,9]))
+   empty=((j==3 or (j==2 and i in [0,2,4])) if mode=='baseline' else (j==3 and i in [1,3,5,6,7,9]))
    dist=round(dist*(1.12 if mode=='baseline' else 1),1)
    lid=f'L{i*4+j+1:03}';commodity=['Textiles','FMCG','Marble','Oranges'][j];duration=dist/60
    # Demo routes include scheduled driver rest, within the week horizon.

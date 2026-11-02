@@ -13,10 +13,18 @@ export default defineConfig({
       ],
     },
   },
-  webServer: {
-    command: "npm run dev",
-    url: "http://127.0.0.1:5173",
-    reuseExistingServer: true,
-  },
+  webServer: [
+    {
+      command: "npm run dev",
+      url: "http://127.0.0.1:5173",
+      reuseExistingServer: true,
+    },
+    {
+      command: "npm run dev -- --port 5174",
+      url: "http://127.0.0.1:5174",
+      env: { VITE_USE_MOCKS: "false", VITE_API_URL: "http://127.0.0.1:9" },
+      reuseExistingServer: false,
+    },
+  ],
   reporter: "list",
 });

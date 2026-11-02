@@ -136,8 +136,8 @@ export type ReplanEvent =
   | { type: "new_load"; load: Load; at_h: number };
 
 export interface Matrix {
- cities: string[];
- distance_km: number[][];
- duration_h: number[][];
- source: string;
+  cities: string[];
+  distance_km: number[][];
+  duration_h: number[][];
+  source: string;
 }

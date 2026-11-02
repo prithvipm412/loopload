@@ -1,4 +1,10 @@
 import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
+const fixture = (name: string) =>
+  JSON.parse(
+    readFileSync(new URL(`../src/mocks/${name}.json`, import.meta.url), "utf8"),
+  );
+const aiFixture = fixture("plan_ai");
 test("judge demo: plan, inspect compliance, cancel a load, forecast and Kannada driver", async ({
   page,
 }) => {
@@ -14,7 +20,7 @@ test("judge demo: plan, inspect compliance, cancel a load, forecast and Kannada 
   await page.getByRole("button", { name: "AI Plan", exact: true }).click();
   await expect(page.locator(".mode-badge")).toHaveText("AI plan");
   await expect(page.locator(".metric").first().locator("strong")).toHaveText(
-    "3,450 km",
+    `${aiFixture.metrics.empty_km.toLocaleString("en-IN", { maximumFractionDigits: 0 })} km`,
   );
   await page.getByRole("button", { name: "Open hero truck" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
@@ -22,6 +28,9 @@ test("judge demo: plan, inspect compliance, cancel a load, forecast and Kannada 
     page.getByRole("dialog").getByText("open body · 21 t"),
   ).toBeVisible();
   await expect(page.getByRole("dialog").locator(".leg-card")).toHaveCount(4);
+  await expect(
+    page.getByRole("dialog").locator(".kind-label.loaded"),
+  ).toHaveCount(4);
   await expect(
     page.getByRole("dialog").getByText(/E-way bill expires/),
   ).toBeVisible();
@@ -80,4 +89,77 @@ test("light projector layout and narrow screen stay within viewport", async ({
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBeTruthy();
+});
+
+test("API outage shows an error toast and retains the interactive mock dashboard", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:5174/");
+  await expect(
+    page.getByRole("heading", { name: "A better week for every truck." }),
+  ).toBeVisible();
+  await expect(page.getByRole("status")).toContainText(
+    "API unavailable. Showing demo data.",
+  );
+  await page.getByRole("button", { name: "AI Plan", exact: true }).click();
+  await expect(page.locator(".mode-badge")).toHaveText("AI plan");
+});
+
+test("fixture totals and deltas agree with their legs and preserve the hero loop", async () => {
+  const baseline = fixture("plan_baseline");
+  const solo = fixture("plan_solo");
+  const compare = fixture("compare");
+  const scenario = fixture("scenario");
+  expect(scenario.cities).toHaveLength(25);
+  expect(scenario.trucks).toHaveLength(10);
+  for (const plan of [baseline, aiFixture, solo]) {
+    const legs = plan.trucks.flatMap((t) => t.legs);
+    expect(plan.metrics.empty_km).toBeCloseTo(
+      legs
+        .filter((l) => l.kind === "empty")
+        .reduce((n, l) => n + l.distance_km, 0),
+      1,
+    );
+    expect(plan.metrics.revenue_inr).toBe(
+      legs.reduce((n, l) => n + l.revenue_inr, 0),
+    );
+    expect(plan.metrics.profit_inr).toBe(
+      plan.metrics.revenue_inr -
+        plan.metrics.diesel_inr -
+        plan.metrics.toll_inr,
+    );
+    expect(plan.metrics.loads_served).toBe(
+      legs.filter((l) => l.kind === "loaded").length,
+    );
+    expect(plan.unassigned_loads.length + plan.metrics.loads_served).toBe(
+      scenario.loads.length,
+    );
+    for (const truck of plan.trucks) {
+      for (const leg of truck.legs) {
+        expect(leg.arrive_h).toBeLessThanOrEqual(168);
+        expect(leg.arrive_h).toBeGreaterThan(leg.depart_h);
+        expect(leg.path.length).toBeGreaterThanOrEqual(2);
+        const city = scenario.cities.find((c) => c.id === leg.from)!;
+        expect(leg.path[0]).toEqual([city.lon, city.lat]);
+        if (leg.kind === "loaded")
+          expect(scenario.loads.some((l) => l.id === leg.load_id)).toBeTruthy();
+        else expect(leg.load_id).toBeNull();
+      }
+    }
+  }
+  expect(aiFixture.metrics.empty_pct).toBeLessThan(15);
+  expect(baseline.metrics.empty_pct).toBeGreaterThan(30);
+  expect(compare.delta.empty_km).toBeCloseTo(
+    aiFixture.metrics.empty_km - baseline.metrics.empty_km,
+    1,
+  );
+  expect(aiFixture.trucks[0].legs.map((l) => [l.from, l.to, l.kind])).toEqual([
+    ["TPR", "DEL", "loaded"],
+    ["DEL", "JAI", "loaded"],
+    ["JAI", "NAG", "loaded"],
+    ["NAG", "TPR", "loaded"],
+  ]);
+  expect(
+    aiFixture.trucks.flatMap((t) => t.legs).filter((l) => !l.compliance.ok),
+  ).toHaveLength(2);
 });
