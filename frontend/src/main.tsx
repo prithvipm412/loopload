@@ -115,13 +115,13 @@ function App() {
           </span>
         </Link>
         <nav>
-          <NavLink to="/" end>
+          <NavLink data-testid="nav-dashboard" to="/" end>
             <Layers size={15} /> Fleet planner
           </NavLink>
-          <NavLink to="/forecast">
+          <NavLink data-testid="nav-forecast" to="/forecast">
             <ChartNoAxesCombined size={15} /> Demand forecast
           </NavLink>
-          <NavLink to="/driver/T01">
+          <NavLink data-testid="nav-driver" to="/driver/T01">
             <TruckIcon size={15} /> Driver view
           </NavLink>
         </nav>
@@ -165,6 +165,9 @@ function App() {
         {toast && (
           <motion.div
             role="status"
+            data-testid={
+              toast.startsWith("Re-planned") ? "replan-toast" : undefined
+            }
             className="toast"
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -290,6 +293,7 @@ function Dashboard({
   const metrics = [
     {
       label: "Empty kilometres",
+      testId: "counter-empty-km",
       value: plan.metrics.empty_km,
       base: baseline.metrics.empty_km,
       format: (v: number) => `${num(v)} km`,
@@ -298,6 +302,7 @@ function Dashboard({
     },
     {
       label: "Wasted diesel",
+      testId: "counter-diesel",
       value: waste(plan),
       base: waste(baseline),
       format: compact,
@@ -306,6 +311,7 @@ function Dashboard({
     },
     {
       label: "CO₂ emissions",
+      testId: "counter-co2",
       value: plan.metrics.co2_kg / 1000,
       base: baseline.metrics.co2_kg / 1000,
       format: (v: number) => `${num(v, 1)} t`,
@@ -314,6 +320,7 @@ function Dashboard({
     },
     {
       label: "Freight revenue",
+      testId: "counter-revenue",
       value: plan.metrics.revenue_inr,
       base: baseline.metrics.revenue_inr,
       format: compact,
@@ -322,6 +329,7 @@ function Dashboard({
     },
     {
       label: "Loaded distance",
+      testId: "counter-loaded-pct",
       value: 100 - plan.metrics.empty_pct,
       base: 100 - baseline.metrics.empty_pct,
       format: (v: number) => `${num(v, 1)}%`,
@@ -330,6 +338,7 @@ function Dashboard({
     },
     {
       label: "Loads served",
+      testId: "counter-loads",
       value: plan.metrics.loads_served,
       base: baseline.metrics.loads_served,
       format: num,
@@ -357,12 +366,14 @@ function Dashboard({
       <section className="workspace-toolbar">
         <div className="segmented">
           <button
+            data-testid="mode-toggle-baseline"
             className={mode === "baseline" ? "active" : ""}
             onClick={() => switchPlan("baseline")}
           >
             Today <span>Baseline</span>
           </button>
           <button
+            data-testid="mode-toggle-ai"
             className={mode === "ai" ? "active" : ""}
             onClick={() => switchPlan("ai")}
           >
@@ -370,11 +381,15 @@ function Dashboard({
           </button>
         </div>
         <div className="toolbar-actions">
-          <span className="solve-badge">
+          <span data-testid="solve-time-badge" className="solve-badge">
             <span className="status-dot" />
             Solved in {num(plan.solve_time_s, 1)} s
           </span>
-          <button className="primary" onClick={() => switchPlan("ai")}>
+          <button
+            data-testid="ai-plan-button"
+            className="primary"
+            onClick={() => switchPlan("ai")}
+          >
             <Sparkles size={16} /> AI Plan <ArrowRight size={16} />
           </button>
         </div>
@@ -451,6 +466,7 @@ function Dashboard({
           <section className="timeline panel">
             <div className="timeline-top">
               <button
+                data-testid="timeline-play"
                 className="play-button"
                 aria-label={playing ? "Pause playback" : "Play playback"}
                 onClick={() => setPlaying(!playing)}
@@ -475,6 +491,7 @@ function Dashboard({
               </button>
             </div>
             <input
+              data-testid="timeline-scrubber"
               aria-label="Week time"
               type="range"
               min="0"
@@ -505,7 +522,11 @@ function Dashboard({
                 <small>Cancel a future load and watch the fleet adapt.</small>
               </span>
             </div>
-            <button disabled={busy} onClick={replan}>
+            <button
+              data-testid="cancel-load-button"
+              disabled={busy}
+              onClick={replan}
+            >
               {busy ? "Re-planning…" : "Simulate: cancel a load"}
               <ArrowRight size={14} />
             </button>
@@ -531,7 +552,7 @@ function Dashboard({
                     <m.icon size={14} />
                     {m.label}
                   </span>
-                  <strong>
+                  <strong data-testid={m.testId}>
                     <Counter value={m.value} format={m.format} />
                   </strong>
                   <small
@@ -573,6 +594,7 @@ function Dashboard({
               const t = scenario.trucks.find((t) => t.id === tp.truck_id)!;
               return (
                 <button
+                  data-testid={`truck-row-${t.id}`}
                   className={`truck-row ${changed.includes(t.id) ? "changed" : ""}`}
                   key={t.id}
                   onClick={() => setSelected(t.id)}
@@ -767,6 +789,7 @@ function TruckDrawer({
         onClick={onClose}
       />
       <motion.aside
+        data-testid="truck-drawer"
         className="drawer"
         role="dialog"
         aria-modal="true"
@@ -778,7 +801,12 @@ function TruckDrawer({
       >
         <div className="drawer-heading">
           <span className="eyebrow">TRUCK WEEK · {id}</span>
-          <button ref={close} aria-label="Close truck drawer" onClick={onClose}>
+          <button
+            data-testid="truck-drawer-close"
+            ref={close}
+            aria-label="Close truck drawer"
+            onClick={onClose}
+          >
             <X size={20} />
           </button>
         </div>
@@ -918,6 +946,7 @@ function LegCard({ leg, scenario }: { leg: Leg; scenario: Scenario }) {
       </div>
       {leg.compliance ? (
         <div
+          data-testid="compliance-badge"
           className={`compliance ${leg.compliance.ok && !leg.compliance.issues.length ? "ok" : "warning"}`}
         >
           {leg.compliance.ok && !leg.compliance.issues.length ? (
@@ -934,7 +963,9 @@ function LegCard({ leg, scenario }: { leg: Leg; scenario: Scenario }) {
           )}
         </div>
       ) : (
-        <div className="compliance">Compliance pending</div>
+        <div data-testid="compliance-badge" className="compliance">
+          Compliance pending
+        </div>
       )}
     </article>
   );
@@ -955,7 +986,7 @@ function Pooling({
     api.plan("ai_solo").then(setSolo);
   }, []);
   return (
-    <section className="pooling panel">
+    <section data-testid="pooling-card" className="pooling panel">
       <div className="pooling-heading">
         <span className="pool-icon">
           <Layers size={20} />
@@ -978,6 +1009,7 @@ function Pooling({
       <label className="owner-filter">
         View on map
         <select
+          data-testid="owner-filter"
           aria-label="Filter routes by owner"
           value={owner}
           onChange={(e) => setOwner(e.target.value)}
@@ -1045,7 +1077,7 @@ function ForecastPage({ scenario, ai }: Data) {
         </span>
       </section>
       <div className="forecast-grid">
-        <section className="panel hot-lanes">
+        <section data-testid="hot-lanes-list" className="panel hot-lanes">
           <span className="eyebrow">NEXT WEEK’S OPPORTUNITIES</span>
           <h2>Hot lanes</h2>
           <p>Ranked by forecast load volume</p>
@@ -1085,7 +1117,10 @@ function ForecastPage({ scenario, ai }: Data) {
           </div>
         </section>
         <div>
-          <section className="panel forecast-chart">
+          <section
+            data-testid="forecast-chart"
+            className="panel forecast-chart"
+          >
             <div className="section-title">
               <div>
                 <span className="eyebrow">DEMAND OUTLOOK</span>
@@ -1222,7 +1257,7 @@ function DriverPage({ scenario, ai }: Data) {
   };
   return (
     <main className="driver-stage">
-      <div className="phone" lang={lang}>
+      <div data-testid="driver-phone" className="phone" lang={lang}>
         <div className="phone-top">
           <span>9:41</span>
           <span className="phone-speaker" />
@@ -1240,6 +1275,7 @@ function DriverPage({ scenario, ai }: Data) {
             {(["en", "hi", "kn", "ta"] as Language[]).map((l) => (
               <button
                 key={l}
+                data-testid={`lang-${l}`}
                 className={lang === l ? "active" : ""}
                 onClick={() => setLang(l)}
               >
@@ -1284,6 +1320,7 @@ function DriverPage({ scenario, ai }: Data) {
                 </span>
               </div>
               <div
+                data-testid="compliance-badge"
                 className={`compliance ${next.compliance?.ok && !next.compliance.issues.length ? "ok" : "warning"}`}
               >
                 <ShieldCheck size={13} />

@@ -199,7 +199,7 @@ export default function RouteMap({
     mini,
   ]);
   return (
-    <div className="map-canvas">
+    <div data-testid="map-canvas" className="map-canvas">
       <DeckGL
         initialViewState={{
           longitude: 79,
