@@ -175,6 +175,14 @@ export default function RouteMap({
           t.legs.some((l) => l.from === c.id || l.to === c.id),
         ),
     );
+    // Truck-in-motion markers are drawn above labels, but a label text box
+    // sitting under a moving truck is still illegible, so keep labels clear
+    // of wherever trucks currently are, not just of each other.
+    const truckPad = 10;
+    const truckScreen = [
+      ...truckPositions(plan.trucks.flatMap((t) => t.legs), time),
+      ...(previous ? truckPositions(previous.trucks.flatMap((t) => t.legs), time) : []),
+    ].map(({ position }) => viewport.project(position));
     return [...candidates]
       .sort((a, b) => priority(b) - priority(a))
       .filter((c) => {
@@ -193,6 +201,10 @@ export default function RouteMap({
           box.bottom > size.height - 4
         )
           return false;
+        // Keep labels clear of the title/pill strip and the legend/story
+        // strip, which sit on top of the canvas as static chrome.
+        if (!mini && (box.top < 80 || box.bottom > size.height - 132))
+          return false;
         if (
           occupied.some(
             (b) =>
@@ -203,10 +215,20 @@ export default function RouteMap({
           )
         )
           return false;
+        if (
+          truckScreen.some(
+            ([tx, ty]) =>
+              tx > box.left - truckPad &&
+              tx < box.right + truckPad &&
+              ty > box.top - truckPad &&
+              ty < box.bottom + truckPad,
+          )
+        )
+          return false;
         occupied.push(box);
         return true;
       });
-  }, [scenario, plan, mini, viewState, size]);
+  }, [scenario, plan, previous, mini, viewState, size, time]);
   // Keep geometry references stable while only opacity changes on each frame.
   const currentLegs = useMemo(() => plan.trucks.flatMap((t) => t.legs), [plan]);
   const oldLegs = useMemo(
