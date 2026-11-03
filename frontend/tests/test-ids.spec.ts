@@ -6,7 +6,6 @@ test("automation IDs identify every requested control and counter", async ({
   for (const id of [
     "ai-plan-button",
     "mode-toggle-baseline",
-    "mode-toggle-ai",
     "solve-time-badge",
     "counter-empty-km",
     "counter-diesel",
@@ -32,7 +31,7 @@ test("automation IDs identify every requested control and counter", async ({
     ).toHaveCount(1);
   await page.getByTestId("timeline-play").click();
   await page.getByTestId("timeline-scrubber").fill("0");
-  await page.getByTestId("mode-toggle-ai").click();
+  await page.getByTestId("ai-plan-button").click();
   await page.getByTestId("truck-row-T01").click();
   await expect(page.getByTestId("truck-drawer")).toBeVisible();
   await expect(page.getByTestId("compliance-badge")).toHaveCount(4);

@@ -467,7 +467,7 @@ function Dashboard({
             Today <span>Baseline</span>
           </button>
           <button
-            data-testid="mode-toggle-ai"
+            data-testid="ai-plan-button"
             className={mode === "ai" ? "active" : ""}
             onClick={() => switchPlan("ai")}
           >
@@ -479,13 +479,6 @@ function Dashboard({
             <span className="status-dot" />
             Solved in {num(plan.solve_time_s, 1)} s
           </span>
-          <button
-            data-testid="ai-plan-button"
-            className="primary"
-            onClick={() => switchPlan("ai")}
-          >
-            <Sparkles size={16} /> AI Plan <ArrowRight size={16} />
-          </button>
         </div>
       </section>
       <motion.div

@@ -15,7 +15,7 @@ VIEWPORT = {'width': 1440, 'height': 900}
 TARGETS = {
     'map': (None, ('region', r'(freight|india|trip).*map|map'), None),
     'baseline': (None, ('button', r'^baseline$'), r'^baseline$'),
-    'ai': ('ai-plan-button', ('button', r'^AI Plan$'), r'^AI Plan$'),
+    'ai': ('ai-plan-button', ('button', r'LoopLoad AI'), r'LoopLoad AI'),
     'truck': ('truck-row-T01', ('button', r'\bT01\b'), r'\bT01\b'),
     'drawer': ('truck-drawer', ('dialog', r'T01|truck'), None),
     'close': ('truck-drawer-close', ('button', r'close( truck)?( drawer)?|dismiss'), r'^close$'),

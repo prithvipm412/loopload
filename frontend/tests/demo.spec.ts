@@ -17,7 +17,7 @@ test("judge demo: plan, inspect compliance, cancel a load, forecast and Kannada 
   await page.getByRole("button", { name: "Pause playback" }).click();
   await page.getByLabel("Week time", { exact: true }).fill("0");
   await expect(page.locator(".mode-badge")).toHaveText("Baseline");
-  await page.getByRole("button", { name: "AI Plan", exact: true }).click();
+  await page.getByTestId("ai-plan-button").click();
   await expect(page.locator(".mode-badge")).toHaveText("AI plan");
   await expect(page.locator(".metric").first().locator("strong")).toHaveText(
     `${aiFixture.metrics.empty_km.toLocaleString("en-IN", { maximumFractionDigits: 0 })} km`,
@@ -112,7 +112,7 @@ test("API outage shows an error toast and retains the interactive mock dashboard
   await expect(page.getByRole("status")).toContainText(
     "API unavailable. Showing demo data.",
   );
-  await page.getByRole("button", { name: "AI Plan", exact: true }).click();
+  await page.getByTestId("ai-plan-button").click();
   await expect(page.locator(".mode-badge")).toHaveText("AI plan");
 });
 
@@ -201,7 +201,7 @@ test("real-data edge cases: idle trucks, week overrun and warning-only complianc
   await page.getByRole("button", { name: "Open hero truck" }).click();
   await expect(page.getByRole("dialog")).toContainText("(+1w)");
   await page.keyboard.press("Escape");
-  await page.getByRole("button", { name: "AI Plan", exact: true }).click();
+  await page.getByTestId("ai-plan-button").click();
   await page.locator(".truck-row").filter({ hasText: "T03" }).click();
   await expect(
     page.getByRole("dialog").locator(".compliance.warning"),

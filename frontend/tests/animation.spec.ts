@@ -72,7 +72,7 @@ test("900 ms crossfade and number tween preserve panel geometry", async ({
 });
 test("reversing a switch keeps counters continuous", async ({ page }) => {
   await page
-    .getByTestId("mode-toggle-ai")
+    .getByTestId("ai-plan-button")
     .evaluate((el: HTMLElement) => el.click());
   await page.clock.runFor(250);
   const before = await read(page);
