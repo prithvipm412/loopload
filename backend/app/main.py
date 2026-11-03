@@ -237,8 +237,11 @@ def post_replan(req: ReplanRequest):
     new_plan = replan(plan, req.event, STATE["scenario"], STATE["matrix"], CONFIG)
     _fill_paths_and_compliance(new_plan)
     _enrich_plan_metrics(new_plan)
+    # Keep the replanned plan retrievable by its own id, but don't let it
+    # replace the canonical "latest ai plan" that fresh /api/plan and
+    # /api/compare calls return — simulating a cancellation in one session
+    # must not degrade what every other viewer sees as "the AI plan".
     STATE["plans"][new_plan["plan_id"]] = new_plan
-    STATE["latest_by_mode"][new_plan["mode"]] = new_plan["plan_id"]
     return new_plan
 
 
