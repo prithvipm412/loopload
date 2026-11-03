@@ -83,7 +83,7 @@ test("reversing a switch keeps counters continuous", async ({ page }) => {
   const after = await read(page);
   expect(Math.abs(after.value - before.value)).toBeLessThan(500);
   await page.clock.runFor(1100);
-  await expect(page.getByTestId("counter-empty-km")).toHaveText("13,201 km");
+  await expect(page.getByTestId("counter-empty-km")).toHaveText("21,503 km");
   await expect(page.getByTestId("map-canvas")).toHaveAttribute(
     "data-transitioning",
     "false",

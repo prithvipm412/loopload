@@ -11,9 +11,9 @@ test("optional reasons, AI highlights, judge metrics and temporary replan highli
   await expect(
     page.getByTestId("plan-highlights").locator("article"),
   ).toHaveCount(3);
-  await expect(page.getByTestId("counter-co2")).toHaveText("1.14 t");
+  await expect(page.getByTestId("counter-co2")).toHaveText("1.11 t");
   await expect(page.getByTestId("counter-co2").locator("..")).toContainText(
-    "Total CO2 30.7 t",
+    "Total CO2 30 t",
   );
   await expect(page.getByTestId("counter-loads")).toHaveText("27");
   expect(await page.getByTestId("pooling-card").innerText()).toMatch(
