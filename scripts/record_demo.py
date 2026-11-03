@@ -159,7 +159,10 @@ def tour(page, base_url):
 
     cancelled = safe('simulate cancel a load (optional)', lambda: click(page, 'cancel'))
     if cancelled:
-        safe('wait for replan toast', lambda: locate(page, 'toast'))
+        # Re-solving typically takes 5-10s; the locate() default of 4s was
+        # too tight and logged a false MISSING even though the toast always
+        # appeared before the later screenshot.
+        safe('wait for replan toast', lambda: locate(page, 'toast', timeout=12000))
     pause(page, 4)
     screenshot(page, '05_cancel_load')
 
