@@ -1,25 +1,21 @@
-# Rules for Claude Code (lead) and all agents on LoopLoad
+# Rules for Claude Code on LoopLoad
 
-LoopLoad is an Ideathon demo. It's an AI planner that chains loaded truck trips across India so small fleet owners' trucks rarely drive empty. Four agents build it in parallel, each in its own git worktree and branch.
+LoopLoad is an Ideathon demo. It's an AI planner that chains loaded truck trips across India so small fleet owners' trucks rarely drive empty. Claude Code is now the sole agent building and maintaining the whole project (backend and frontend) in this one worktree on `main`.
 
 ## Always
-1. Read `docs/CONTRACT.md` before writing code. The JSON shapes, function signatures and file ownership there are the law.
-2. Only edit files your role owns (CONTRACT §8). Your role is in the prompt file you were given under `prompts/`.
-3. Commit on your own branch after every working step: `git add -A && git commit -m "<what now works>"`. Never push to `main`; only Claude Code (the lead) merges and pushes.
-4. P0 before P1. P1 before P2.
-5. If the contract blocks you, stop and tell the user. Never silently rename fields.
-6. Do not create `backend/tests/conftest.py` (the lead owns it). Load your fixtures inside your own test files.
+1. Read `docs/CONTRACT.md` before writing code. The JSON shapes and function signatures there are the law unless the user explicitly approves a change.
+2. Commit after every working step: `git add -A && git commit -m "<what now works>"`.
+3. P0 before P1. P1 before P2.
+4. If the contract blocks you, stop and tell the user. Never silently rename fields, change numbers, baseline logic, or the scenario generator without asking first.
+5. The user runs the API and frontend dev servers themselves (ports 8000/5173). Never start a server on those ports — use 8001/5175 for your own testing and shut them down afterward.
 
 ## Backend conventions
 - Python 3.11 or 3.12 is preferred, because OR-Tools wheels may lag on the newest Python. If `python3 --version` is 3.13 or newer and OR-Tools fails to install, use `python3.12` (`brew install python@3.12`).
-- Set up in your worktree: `python3.12 -m venv backend/.venv && backend/.venv/bin/pip install -r backend/requirements.txt`
+- Set up: `python3.12 -m venv backend/.venv && backend/.venv/bin/pip install -r backend/requirements.txt`
 - Run from `backend/`: `cd backend && PYTHONPATH=. .venv/bin/pytest -q`
 - Imports are relative to `backend/`, for example `from app.config import CONFIG, elapsed_h`, `from data.distance import get_matrix`, `from engine.compliance import check_leg`.
 - Engine functions take and return plain dicts/lists in the contract shapes. No cross-module Pydantic.
 - Everything is deterministic for a given seed (default 42).
 
 ## Frontend conventions
-- Everything lives in `frontend/` (Vite + React + TS). It works offline from mocks when `VITE_USE_MOCKS=true`.
-
-## Claude Code specifically
-You are the **lead**. Your full instructions are in `prompts/00_claude_code_lead.md`. You own the API, baseline, metrics, merging, tests, README and pushing to `main`.
+- Everything lives in `frontend/` (Vite + React + TS). It works offline from mocks when `VITE_USE_MOCKS=true`, but the live API is the default source of truth when it's reachable.
